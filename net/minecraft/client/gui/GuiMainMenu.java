@@ -81,9 +81,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private int field_92019_w;
     private ResourceLocation backgroundTexture;
 
-    /** Minecraft Realms button. */
-    private GuiButton realmsButton;
-
     public GuiMainMenu()
     {
         this.openGLWarning2 = field_96138_a;
@@ -234,7 +231,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     {
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer", new Object[0])));
         this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer", new Object[0])));
-        this.buttonList.add(this.realmsButton = new GuiButton(14, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.format("menu.online", new Object[0])));
+        //this.buttonList.add(this.realmsButton = new GuiButton(14, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, I18n.format("menu.online", new Object[0])));
     }
 
     /**
@@ -277,12 +274,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         {
             this.mc.displayGuiScreen(new GuiMultiplayer(this));
         }
-
-        if (button.id == 14 && this.realmsButton.visible)
-        {
-            this.switchToRealms();
-        }
-
+        
         if (button.id == 4)
         {
             this.mc.shutdown();
@@ -304,12 +296,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
                 this.mc.displayGuiScreen(guiyesno);
             }
         }
-    }
-
-    private void switchToRealms()
-    {
-        RealmsBridge realmsbridge = new RealmsBridge();
-        realmsbridge.switchToRealms(this);
     }
 
     public void confirmClicked(boolean result, int id)
