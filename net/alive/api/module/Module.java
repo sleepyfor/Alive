@@ -6,6 +6,7 @@ import net.alive.Client;
 import net.alive.api.value.Value;
 import net.minecraft.client.Minecraft;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +20,9 @@ public class Module {
     private boolean enabled;
     private int keybind;
 
-    public Module(){
+    public Module() {
         Class<?> info = this.getClass();
-        if(!info.isAnnotationPresent(ModuleInfo.class))
+        if (!info.isAnnotationPresent(ModuleInfo.class))
             throw new RuntimeException(info.getName() + "ModuleInfo annotation not found! Please make sure to initialize!");
 
         moduleInfo = info.getDeclaredAnnotation(ModuleInfo.class);
@@ -31,17 +32,50 @@ public class Module {
         name = moduleInfo.name();
     }
 
-    public void onEnable(){
+    public void onEnable() {
         Client.INSTANCE.getEventBus().register(this);
     }
 
-    public void onDisable(){
+    public void onDisable() {
         Client.INSTANCE.getEventBus().unregister(this);
         mc.timer.timerSpeed = 1.0f;
     }
 
-    public void addValue(Value value){
-        values.add(value);
+    public List<Value> getValues() {
+        List<Value> values = new ArrayList<>();
+
+        for (Field field : getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+
+                Object o = field.get(this);
+
+                if (o instanceof Value)
+                    values.add((Value) o);
+            } catch (IllegalAccessException ignored) {
+            }
+        }
+        return values;
+    }
+
+    public Value getValue( String valueName) {
+        for (Field field : getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+
+                final Object o = field.get(this);
+
+                if (o instanceof Value) {
+                    Value value = (Value) o;
+
+                    if (value.getValueName().equalsIgnoreCase(valueName))
+                        return value;
+                }
+            } catch (IllegalAccessException e) {
+            }
+        }
+
+        return null;
     }
 
     public void setState(boolean enabled) {

@@ -6,5 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ValueManager {
-    public static List<Value> values = new ArrayList<>();
+
+    public Value getValue(Value value){
+        return value;
+    }
 }
