@@ -15,6 +15,7 @@ public class Value<T> {
     private double min;
     private double max;
     private boolean isCombo;
+    private double inc;
     private ArrayList<String> combo;
 
     public Value(String valueName, T valueObject) {
@@ -25,11 +26,21 @@ public class Value<T> {
         isCombo = false;
     }
 
-    public Value(String valueName, T valueObject, double min, double max) {
+    public Value(String valueName, T valueObject, double min, double max, double inc) {
         this.valueName = valueName;
         this.valueObject = valueObject;
         this.min = min;
         this.max = max;
+        this.inc = inc;
+        isCombo = false;
+    }
+
+    public Value(String valueName, T valueObject, int min, int max, int inc) {
+        this.valueName = valueName;
+        this.valueObject = valueObject;
+        this.min = min;
+        this.max = max;
+        this.inc = inc;
         isCombo = false;
     }
 

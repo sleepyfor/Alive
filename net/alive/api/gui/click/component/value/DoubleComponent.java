@@ -5,12 +5,12 @@ import net.alive.api.gui.click.component.Component;
 import net.alive.api.value.Value;
 
 @Getter
-public class IntegerComponent extends Component {
+public class DoubleComponent extends Component {
 
-    public Value<Integer> value;
+    public Value<Double> value;
     public boolean sliding;
 
-    public IntegerComponent(Value value){
+    public DoubleComponent(Value value){
         this.value = value;
     }
 }

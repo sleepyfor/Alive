@@ -58,7 +58,7 @@ public class Module {
         return values;
     }
 
-    public Value getValue( String valueName) {
+    public Value getValue(String valueName) {
         for (Field field : getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
