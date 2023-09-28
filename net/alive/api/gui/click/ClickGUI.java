@@ -11,6 +11,8 @@ import net.alive.api.gui.click.component.value.StringComponent;
 import net.alive.api.module.Category;
 import net.alive.api.module.Module;
 import net.alive.api.value.Value;
+import net.alive.implement.modules.movement.Flight;
+import net.alive.implement.modules.render.Hud;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,6 +23,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +49,8 @@ public class ClickGUI extends GuiScreen {
             drawValues(mouseX, mouseY);
     }
 
-    @Override
-    public void initGui() {
-        current = Category.RENDER;
+    public void initClickGUI(){
+        current = Category.COMBAT;
         booleanButtons.clear();
         categories.clear();
         modules.clear();
@@ -56,6 +58,11 @@ public class ClickGUI extends GuiScreen {
             categories.add(new CategoryButton(category));
         for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(current))
             modules.add(new ModuleButton(module));
+    }
+
+    @Override
+    public void initGui() {
+
     }
 
     public void drawBackground() {
@@ -67,6 +74,9 @@ public class ClickGUI extends GuiScreen {
         Gui.drawRect(x - 1, y - 1, x + width + 106, y, color);
         Gui.drawRect(x - 1, y + 25, x + width + 106, y + 26, color);
         Gui.drawRect(x + 80, y + 25, x + 81, y + height + 1, color);
+        if (settingsScreen)
+            Client.INSTANCE.getFontManager().getArial17().drawStringWithShadow("Settings for: \247F" + settingsModule.getName(),
+                    x + 82, y + height - 10, new Color(255, 161, 205, 255).getRGB());
     }
 
     public void drawCategories(int mouseX, int mouseY) {
@@ -145,8 +155,6 @@ public class ClickGUI extends GuiScreen {
             int i3 = 0;
             drawDoubleSliders(mouseX, mouseY, i3);
             drawIntegerSliders(mouseX, mouseY, i3);
-            Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow("Settings for: \247F" + settingsModule.getName(),
-                    x + 114, y + height - 10, new Color(255, 161, 205, 255).getRGB());
         }
     }
 
@@ -158,8 +166,10 @@ public class ClickGUI extends GuiScreen {
                     modules.clear();
                 for (CategoryButton categoryButton : categories) {
                     boolean hovered = isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height);
-                    if (hovered)
+                    if (hovered) {
                         current = categoryButton.category;
+                        settingsScreen = false;
+                    }
                     for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(current))
                         if (hovered)
                             modules.add(new ModuleButton(module));
@@ -179,7 +189,7 @@ public class ClickGUI extends GuiScreen {
                                 stringComponent.width, stringComponent.height))
                             stringComponent.setValue();
                     for (DoubleComponent doubleComponent : doubleSliders)
-                        if (isHovered(mouseX, mouseY, doubleComponent.getX(), doubleComponent.getY(), doubleComponent.getWidth(), doubleComponent.getHeight())) {
+                        if (isHovered(mouseX, mouseY, doubleComponent.getX(), doubleComponent.getY() + 5, doubleComponent.getWidth(), doubleComponent.getHeight())) {
                             doubleComponent.sliding = true;
                         }
                     for (IntegerComponent integerComponent : integerSliders)
@@ -189,7 +199,6 @@ public class ClickGUI extends GuiScreen {
                 }
                 break;
             case 1:
-                settingsScreen = true;
                 for (ModuleButton moduleButton : modules) {
                     boolean hovered = isHovered(mouseX, mouseY, moduleButton.x, moduleButton.y, moduleButton.width, moduleButton.height);
                     if (hovered) {
@@ -198,7 +207,6 @@ public class ClickGUI extends GuiScreen {
                         doubleSliders.clear();
                         integerSliders.clear();
                         settingsScreen = true;
-                        // booleanValues.addAll(moduleButton.module.getValues());
                         for (Value value : moduleButton.module.getValues()) {
                             if (value.getValueObject() instanceof Boolean)
                                 booleanButtons.add(new BooleanComponent(value));
@@ -226,15 +234,20 @@ public class ClickGUI extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         for (ModuleButton moduleButton : modules)
-            if(moduleButton.binding) {
+            if (moduleButton.binding) {
+                if (keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_DELETE)
+                    keyCode = Keyboard.KEY_NONE;
                 moduleButton.module.setKeybind(keyCode);
-                mc.thePlayer.addChatMessage(new ChatComponentText("\2478\247l<\2479\247lA\247f\247llive\2478\247l>\247r \247c\247l" +
-                        moduleButton.module.getName() + " has been bound to " + Keyboard.getKeyName(moduleButton.module.getKeybind())));
-//                mc.thePlayer.addChatMessage(new ChatComponentText("\2478<\2479A\247flive\2478>\247r \247c" +
-//                        moduleButton.module.getName() + " has been bound to " + Keyboard.getKeyName(moduleButton.module.getKeybind())));
+                if (moduleButton.module.getKeybind() == Keyboard.KEY_NONE)
+                    mc.thePlayer.addChatMessage(new ChatComponentText("\2477<\247fA\247flive\2477>\247r \247c\247b" +
+                            "Unbound " + moduleButton.module.getName()));
+                else
+                    mc.thePlayer.addChatMessage(new ChatComponentText("\2477<\247fA\247flive\2477>\247r \247c\247b" +
+                            moduleButton.module.getName() + " has been bound to " + Keyboard.getKeyName(moduleButton.module.getKeybind())));
                 moduleButton.binding = false;
+            } else {
+                super.keyTyped(typedChar, keyCode);
             }
-        super.keyTyped(typedChar, keyCode);
     }
 
     @Override
@@ -243,6 +256,11 @@ public class ClickGUI extends GuiScreen {
             doubleComponent.sliding = false;
         for (IntegerComponent integerComponent : integerSliders)
             integerComponent.sliding = false;
+    }
+
+    @Override
+    public boolean doesGuiPauseGame() {
+        return false;
     }
 
     private double round(double num, double increment) {
@@ -266,15 +284,16 @@ public class ClickGUI extends GuiScreen {
             double perc = (double) (width - 3) / (max - min);
             double valRounded = round(val.getValueObject(), val.getInc());
             double barWidth = (perc * valRounded - perc * min + 2);
+            var decimal = new DecimalFormat("#.####");
             if (doubleComponent.isSliding())
-                doubleComponent.value.setValueObject(round(((mouseX - 4) - doubleComponent.getX()) * (max - min) / doubleComponent.getWidth() + min, inc));
+                doubleComponent.value.setValueObject(round(((mouseX + 2) - doubleComponent.getX()) * (max - min) / doubleComponent.getWidth() + min, inc));
             if (val.getValueObject() > max)
                 val.setValueObject(max);
             if (val.getValueObject() < min)
                 val.setValueObject(min);
             doubleComponent.setX(x + 235);
             doubleComponent.setY(y + 15 + i);
-            doubleComponent.setWidth(100);
+            doubleComponent.setWidth(140);
             doubleComponent.setHeight(11);
             RenderingUtils.drawRectangle(doubleComponent.x, doubleComponent.y + 5, doubleComponent.x + doubleComponent.width,
                     doubleComponent.y + doubleComponent.height + 5, new Color(100, 100, 100, 255).getRGB());
@@ -287,10 +306,10 @@ public class ClickGUI extends GuiScreen {
                     doubleComponent.y + 5, (float) (doubleComponent.x +
                             ((doubleComponent.value.getValueObject() - doubleComponent.value.getMin()) /
                                     (doubleComponent.value.getMax() - doubleComponent.value.getMin())) * doubleComponent.width),
-                    doubleComponent.y + doubleComponent.height + 5,
-                    new Color((Integer) settingsModule.getValue("Red").getValueObject(), (Integer) settingsModule.getValue("Green").getValueObject(),
-                            (Integer) settingsModule.getValue("Blue").getValueObject(), 255).getRGB());
-            Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(doubleComponent.value.getValueName() + " -> " + doubleComponent.value.getValueObject(),
+                    doubleComponent.y + doubleComponent.height + 5, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
+                            Hud.blue.getValueObject().intValue(), 255).getRGB());
+            Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(doubleComponent.value.getValueName() + " -> " +
+                            decimal.format(doubleComponent.value.getValueObject()),
                     doubleComponent.x + doubleComponent.width / 2, doubleComponent.y - 5, -1);
         }
     }
@@ -327,8 +346,7 @@ public class ClickGUI extends GuiScreen {
                             ((integerComponent.value.getValueObject() - integerComponent.value.getMin()) /
                                     (integerComponent.value.getMax() - integerComponent.value.getMin())) * integerComponent.width),
                     integerComponent.y + integerComponent.height + 5,
-                    new Color((Integer) settingsModule.getValue("Red").getValueObject(), (Integer) settingsModule.getValue("Green").getValueObject(),
-                            (Integer) settingsModule.getValue("Blue").getValueObject(), 255).getRGB());
+                    new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB());
             Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(integerComponent.value.getValueName() + " -> " + integerComponent.value.getValueObject(),
                     integerComponent.x + integerComponent.width / 2, integerComponent.y - 5, -1);
         }

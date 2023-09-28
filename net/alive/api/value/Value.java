@@ -53,7 +53,7 @@ public class Value<T> {
 
     public Value(String valueName, String selectedName, String... modes) {
         this.valueName = valueName;
-        this.valueObject = (T) selectedName;
+        this.valueObject = (T) Lists.newArrayList(modes).get(0);
         this.combo = Lists.newArrayList(modes);
         isCombo = true;
     }

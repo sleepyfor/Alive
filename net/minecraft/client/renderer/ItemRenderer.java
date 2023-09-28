@@ -356,16 +356,16 @@ public class ItemRenderer
                     case 2:
                     case 3:
                         this.func_178104_a(entityplayersp, partialTicks);
-                        this.transformFirstPersonItem(f, 0.0F);
+                        this.transformFirstPersonItem(f, f1);
                         break;
 
                     case 4:
-                        this.transformFirstPersonItem(f, 0.0F);
+                        this.transformFirstPersonItem(f, f1);
                         this.func_178103_d();
                         break;
 
                     case 5:
-                        this.transformFirstPersonItem(f, 0.0F);
+                        this.transformFirstPersonItem(f, f1);
                         this.func_178098_a(partialTicks, entityplayersp);
                 }
             }

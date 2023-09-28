@@ -192,7 +192,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
 
     /** A 10MiB preallocation to ensure the heap is reasonably sized. */
     public static byte[] memoryReserve = new byte[10485760];
-    private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode[] {new DisplayMode(2560, 1600), new DisplayMode(2880, 1800)});
+    private static final List<DisplayMode> macDisplayModes = Lists.newArrayList(new DisplayMode(2560, 1600), new DisplayMode(2880, 1800));
     private final File fileResourcepacks;
     private final PropertyMap twitchDetails;
     private final PropertyMap field_181038_N;
@@ -369,10 +369,10 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         logger.info("Setting user: " + this.session.getUsername());
         logger.info("(Session ID is " + this.session.getSessionID() + ")");
         this.isDemo = gameConfig.gameInfo.isDemo;
-        this.displayWidth = gameConfig.displayInfo.width > 0 ? gameConfig.displayInfo.width : 1;
-        this.displayHeight = gameConfig.displayInfo.height > 0 ? gameConfig.displayInfo.height : 1;
-        this.tempDisplayWidth = gameConfig.displayInfo.width;
-        this.tempDisplayHeight = gameConfig.displayInfo.height;
+        this.displayWidth = 1280;
+        this.displayHeight = 720;
+        this.tempDisplayWidth = 1280;
+        this.tempDisplayHeight = 720;
         this.fullscreen = gameConfig.displayInfo.fullscreen;
         this.jvm64bit = isJvm64bit();
         this.theIntegratedServer = new IntegratedServer(this);
@@ -512,7 +512,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
             {
                 try
                 {
-                    return String.format(p_74535_1_, new Object[] {GameSettings.getKeyDisplayString(Minecraft.this.gameSettings.keyBindInventory.getKeyCode())});
+                    return String.format(p_74535_1_, GameSettings.getKeyDisplayString(Minecraft.this.gameSettings.keyBindInventory.getKeyCode()));
                 }
                 catch (Exception exception)
                 {

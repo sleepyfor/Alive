@@ -3,6 +3,10 @@ package net.alive.manager.module;
 import lombok.Getter;
 import net.alive.api.module.Category;
 import net.alive.api.module.Module;
+import net.alive.implement.modules.combat.KillAura;
+import net.alive.implement.modules.movement.Flight;
+import net.alive.implement.modules.movement.NoSlowDown;
+import net.alive.implement.modules.movement.Speed;
 import net.alive.implement.modules.movement.Sprint;
 import net.alive.implement.modules.render.ClickGUI;
 import net.alive.implement.modules.render.Hud;
@@ -20,6 +24,10 @@ public class ModuleManager {
         registerModule(Hud.class, new Hud());
         registerModule(Sprint.class, new Sprint());
         registerModule(ClickGUI.class, new ClickGUI());
+        registerModule(Flight.class, new Flight());
+        registerModule(KillAura.class, new KillAura());
+        registerModule(Speed.class, new Speed());
+        registerModule(NoSlowDown.class, new NoSlowDown());
     }
 
     public void registerModule(Class modClass, Module module) {

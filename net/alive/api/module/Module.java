@@ -18,6 +18,7 @@ public class Module {
     private ModuleInfo moduleInfo;
     private Category category;
     private boolean enabled;
+    private String suffix;
     private int keybind;
 
     public Module() {
@@ -76,6 +77,14 @@ public class Module {
         }
 
         return null;
+    }
+
+    public String getDisplayName() {
+        return suffix != null ? name + " \247f" + suffix : name;
+    }
+
+    public String getMode(String mode){
+        return (String) getValue(mode).getValueObject();
     }
 
     public void setState(boolean enabled) {

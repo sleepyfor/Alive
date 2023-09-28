@@ -7,6 +7,8 @@ import net.alive.api.event.state.EventState;
 import net.alive.implement.events.player.MovementEvent;
 import net.alive.implement.events.player.PlayerUpdateEvent;
 import net.alive.implement.events.player.SprintEvent;
+import net.alive.implement.modules.movement.NoSlowDown;
+import net.alive.implement.modules.movement.Sprint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -699,7 +701,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
 
-        if (this.isUsingItem() && !this.isRiding()) {
+        if (this.isUsingItem() && !this.isRiding() && !Client.INSTANCE.getModuleManager().getModule(NoSlowDown.class).isEnabled()) {
             this.movementInput.moveStrafe *= 0.2F;
             this.movementInput.moveForward *= 0.2F;
             this.sprintToggleTimer = 0;
