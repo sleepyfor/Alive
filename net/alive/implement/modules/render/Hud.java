@@ -10,6 +10,7 @@ import net.alive.api.module.Category;
 import net.alive.api.module.Module;
 import net.alive.api.module.ModuleInfo;
 import net.alive.api.value.Value;
+import net.alive.implement.events.keys.KeyboardEvent;
 import net.alive.implement.events.render.Render2DEvent;
 import net.alive.manager.module.ModuleManager;
 import net.alive.manager.value.ValueManager;
@@ -87,6 +88,9 @@ public class Hud extends Module {
         var nameWidth = font.getWidth(title);
         var authWidth = font.getWidth(author);
         var fpsWidth = font.getWidth(fps);
+
+        Client.INSTANCE.getTabGui().draw(3, 20);
+
         if (watermark.getValueObject()) {
             font.drawStringWithShadow(title, 3, 3, color);
             font.drawStringWithShadow(author, 3, 13, color);
@@ -105,4 +109,9 @@ public class Hud extends Module {
             }
         }
     }
+
+    @Subscribe
+    public Listener<KeyboardEvent> doKeyboard = new Listener<>(event -> {
+        Client.INSTANCE.getTabGui().doKeys(event.getKey());
+    });
 }
