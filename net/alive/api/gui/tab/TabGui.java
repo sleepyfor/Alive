@@ -94,7 +94,7 @@ public class TabGui {
             if (!extended) {
                 for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selected)) {
                     y2 += 20;
-                    modules.add(new ModuleTab(module.getName(), 63, 20 + y2, 60, 20, this, module));
+                    modules.add(new ModuleTab(module.getName(), 64, 20 + y2, 60, 20, this, module));
                     extended = true;
                     selection = modules.get(0).module;
                 }
