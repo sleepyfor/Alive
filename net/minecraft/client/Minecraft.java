@@ -1030,7 +1030,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         finally
         {
             Display.destroy();
-
             if (!this.hasCrashed)
             {
                 System.exit(0);
@@ -1399,8 +1398,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage
     /**
      * Called when the window is closing. Sets 'running' to false which allows the game loop to exit cleanly.
      */
-    public void shutdown()
-    {
+    public void shutdown() {
+        try {
+            Client.INSTANCE.getConfig().saveConfig();
+        } catch (IOException ignored) {
+
+        }
         this.running = false;
     }
 

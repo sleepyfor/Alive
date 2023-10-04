@@ -31,14 +31,15 @@ public class Flight extends Module {
             case "Vanilla":
                 setSuffix(ground.getValueObject() ? getMode("Mode") + "Ground" : getMode("Mode"));
                 mc.thePlayer.onGround = ground.getValueObject();
-                mc.thePlayer.motionY = (mc.thePlayer.movementInput.jump ? flightSpeed.getValueObject() : mc.thePlayer.movementInput.sneak ? - flightSpeed.getValueObject() : 0);
-                    PlayerUtils.setSpeed(mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0 ? flightSpeed.getValueObject() : 0);
+                mc.thePlayer.motionY = (mc.thePlayer.movementInput.jump ? flightSpeed.getValueObject() : mc.thePlayer.movementInput.sneak ? -flightSpeed.getValueObject() : 0);
+                PlayerUtils.setSpeed(mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0 ? flightSpeed.getValueObject() : 0);
                 break;
         }
     });
 
     @Override
     public void onDisable() {
+        if (mc.theWorld == null) return;
         mc.thePlayer.capabilities.isFlying = false;
         PlayerUtils.setSpeed(0.2);
         super.onDisable();

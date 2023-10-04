@@ -68,7 +68,7 @@ public class Speed extends Module {
 
     @Override
     public void onDisable() {
-        mc.thePlayer.capabilities.isFlying = false;
+        if (mc.theWorld == null) return;
         PlayerUtils.setSpeed(0.2);
         super.onDisable();
     }
