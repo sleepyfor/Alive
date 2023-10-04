@@ -20,16 +20,18 @@ import java.util.List;
 
 @Getter
 public class TabGui {
-    public List<ModuleTab> modules;
     public List<CategoryTab> categories;
+    public double x, y, y2, originalY;
+    public List<ModuleTab> modules;
     public Category selected;
+    public int index, index2;
     public Module selection;
     public boolean extended;
-    public double x, y, y2;
-    public int index, index2;
+
 
     public void draw(double x, double y) {
         this.x = x;
+        this.originalY = y;
         int i = 0;
         for (CategoryTab categoryTab : categories) {
             i += categoryTab.height;
@@ -69,7 +71,6 @@ public class TabGui {
         if (key == Keyboard.KEY_DOWN) {
             if (!extended) {
                 index++;
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(String.valueOf(index)));
                 if (index > 4) index = 0;
             } else {
                 index2++;
@@ -81,7 +82,6 @@ public class TabGui {
         if (key == Keyboard.KEY_UP) {
             if (!extended) {
                 index--;
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(String.valueOf(index)));
                 if (index < 0) index = 4;
             } else {
                 index2--;
@@ -92,9 +92,10 @@ public class TabGui {
         }
         if (key == Keyboard.KEY_RIGHT) {
             if (!extended) {
+                index2 = 0;
                 for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selected)) {
                     y2 += 20;
-                    modules.add(new ModuleTab(module.getName(), 64, 20 + y2, 60, 20, this, module));
+                    modules.add(new ModuleTab(module.getName(), 64, originalY + y2, 60, 20, this, module));
                     extended = true;
                     selection = modules.get(0).module;
                 }

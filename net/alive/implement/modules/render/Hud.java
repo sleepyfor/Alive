@@ -28,13 +28,14 @@ public class Hud extends Module {
     public Value mode = new Value<>("Mode", "Alive", modes);
     public Value<Boolean> arraylist = new Value<>("Arraylist", true);
     public Value<Boolean> watermark = new Value<>("Watermark", true);
+    public Value<Boolean> tabgui = new Value<>("TabGUI", true);
     public static Value<Double> red = new Value<>("Red", 168., 0, 255, 1);
     public static Value<Double> green = new Value<>("Green", 204., 0, 255, 1);
     public static Value<Double> blue = new Value<>("Blue", 255., 0, 255, 1);
 
     public Hud() {
-        modes.add("Alive");
         modes.add("Traditional");
+        modes.add("Alive");
     }
 
     @Subscribe
@@ -50,20 +51,17 @@ public class Hud extends Module {
         }
     });
 
-    public void aliveHud(Render2DEvent event){
+    public void aliveHud(Render2DEvent event) {
         var scaledWidth = event.getScaledResolution().getScaledWidth();
         var font = Client.INSTANCE.getFontManager().getArial17();
-        var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + Client.INSTANCE.getDevVersion();
-        var author = "By \247FJustDark";
+        var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + (Client.INSTANCE.isInDev() ? Client.INSTANCE.getDevVersion() : "");
         var fps = "FPS: \247F" + Minecraft.getDebugFPS();
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
         var nameWidth = font.getWidth(title);
-        var authWidth = font.getWidth(author);
         var fpsWidth = font.getWidth(fps);
         if (watermark.getValueObject()) {
             font.drawStringWithShadow(title, scaledWidth - nameWidth - 3, 3, color);
-            font.drawStringWithShadow(author, scaledWidth - authWidth - 3, 13, color);
-            font.drawStringWithShadow(fps, scaledWidth - fpsWidth - 3, 23, color);
+            font.drawStringWithShadow(fps, scaledWidth - fpsWidth - 3, 13, color);
         }
         var offset = 0;
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
@@ -76,25 +74,22 @@ public class Hud extends Module {
                 }
             }
         }
+//        Client.INSTANCE.getTabGui().draw(3, offset - 15);
     }
 
-    public void traditionalHud(Render2DEvent event){
+    public void traditionalHud(Render2DEvent event) {
         var scaledWidth = event.getScaledResolution().getScaledWidth();
         var font = Client.INSTANCE.getFontManager().getArial17();
-        var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + Client.INSTANCE.getDevVersion();
-        var author = "By \247FJustDark";
+        var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + (Client.INSTANCE.isInDev() ? Client.INSTANCE.getDevVersion() : "");
         var fps = "FPS: \247F" + Minecraft.getDebugFPS();
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
-        var nameWidth = font.getWidth(title);
-        var authWidth = font.getWidth(author);
-        var fpsWidth = font.getWidth(fps);
 
-        Client.INSTANCE.getTabGui().draw(3, 20);
+        if (tabgui.getValueObject())
+            Client.INSTANCE.getTabGui().draw(3, 4);
 
         if (watermark.getValueObject()) {
             font.drawStringWithShadow(title, 3, 3, color);
-            font.drawStringWithShadow(author, 3, 13, color);
-            font.drawStringWithShadow(fps, 3, 23, color);
+            font.drawStringWithShadow(fps, 3, 13, color);
         }
         var offset = 0;
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
@@ -112,6 +107,7 @@ public class Hud extends Module {
 
     @Subscribe
     public Listener<KeyboardEvent> doKeyboard = new Listener<>(event -> {
-        Client.INSTANCE.getTabGui().doKeys(event.getKey());
+        if (tabgui.getValueObject() && getMode("Mode").equalsIgnoreCase("Traditional"))
+            Client.INSTANCE.getTabGui().doKeys(event.getKey());
     });
 }

@@ -18,9 +18,9 @@ import java.io.IOException;
 public enum Client {
     INSTANCE;
 
-    private final String clientName = "Alive", clientVersion = "0.1.1", devVersion = "(Dev 1)";
+    private final String clientName = "Alive", clientVersion = "0.2.0", devVersion = "(Dev 1)";
     private EventBus<? super IEvent> eventBus;
-    private final boolean isInDev = true;
+    private final boolean isInDev = false;
     private ModuleManager moduleManager;
     private FontManager fontManager;
     private ClickGUI clickGUI;
