@@ -29,39 +29,34 @@ public class Speed extends Module {
         setSuffix(getMode("Mode"));
         switch (getMode("Mode")) {
             case "Vanilla":
-                setSuffix(height.getValueObject() >= 0.45 ? "Highhop": (height.getValueObject() <= 0.1 ? "Yport" : (height.getValueObject() <= 0.3 ? "Lowhop" : (hop.getValueObject() ? "Bhop" : getMode("Mode")))));
-                if(mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0) {
+                setSuffix(height.getValueObject() >= 0.45 ? "Highhop" : (height.getValueObject() <= 0.1 ? "Yport" : (height.getValueObject() <= 0.3 ? "Lowhop" : (hop.getValueObject() ? "Bhop" : getMode("Mode")))));
+                if (mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0) {
                     if (mc.thePlayer.onGround && hop.getValueObject())
                         mc.thePlayer.motionY = height.getValueObject();
-                    if(fastFall.getValueObject() && !mc.thePlayer.onGround)
+                    if (fastFall.getValueObject() && !mc.thePlayer.onGround)
                         mc.thePlayer.motionY -= fallSpeed.getValueObject();
                     PlayerUtils.setSpeed(speed.getValueObject());
                 }
                 break;
             case "NoCheatPlus":
-                if(mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0) {
-                    if(mc.thePlayer.onGround){
+                if (mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0) {
+                    if (mc.thePlayer.onGround) {
                         mc.thePlayer.motionY = PlayerUtils.getJump(0.42F);
                         moveSpeed = PlayerUtils.getBaseMoveSpeed() * 1.47;
                         slow = true;
-                    }else {
-                        if(slow) {
+                    } else {
+                        if (slow) {
                             moveSpeed -= 0.36 * (moveSpeed - PlayerUtils.getBaseMoveSpeed());
                             mc.thePlayer.motionY -= 0.0015;
-                            slow =  false;
-                        }
-                        else{
+                            slow = false;
+                        } else {
                             moveSpeed -= moveSpeed / 159;
 
-                                mc.thePlayer.motionY -= 0.0015;
+                            mc.thePlayer.motionY -= 0.0015;
                         }
                     }
                     PlayerUtils.setSpeed(moveSpeed);
                 }
-                //setSuffix(ground.getValueObject() ? getMode("Mode") + "Ground" : getMode("Mode"));
-//                mc.thePlayer.onGround = ground.getValueObject();
-//                mc.thePlayer.motionY = (mc.thePlayer.movementInput.jump ? flightSpeed.getValueObject() : mc.thePlayer.movementInput.sneak ? - flightSpeed.getValueObject() : 0);
-//                    PlayerUtils.setSpeed(mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0 ? flightSpeed.getValueObject() : 0);
                 break;
         }
     });

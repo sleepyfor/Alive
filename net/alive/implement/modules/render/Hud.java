@@ -16,6 +16,7 @@ import net.alive.manager.module.ModuleManager;
 import net.alive.manager.value.ValueManager;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.util.*;

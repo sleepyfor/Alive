@@ -25,6 +25,7 @@ public enum Client {
     private final File DIR = new File(Minecraft.getMinecraft().mcDataDir, clientName);
     private EventBus<? super IEvent> eventBus;
     private final boolean isInDev = false;
+    private net.alive.api.gui.click2.ClickGUI newClickGUI;
     private ModuleManager moduleManager;
     private FontManager fontManager;
     private ClickGUI clickGUI;
@@ -44,6 +45,8 @@ public enum Client {
         moduleManager.getModule(Sprint.class).setState(true);
         tabGui.initMate();
         clickGUI.initClickGUI();
+        newClickGUI = new net.alive.api.gui.click2.ClickGUI();
+        newClickGUI.initClickGUI();
         config = new Config();
         config.createDirectory();
         try {
