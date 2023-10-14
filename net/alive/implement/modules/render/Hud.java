@@ -122,9 +122,7 @@ public class Hud extends Module {
             Client.INSTANCE.getTabGui().draw(3, 48);
 
         if (watermark.getValueObject()) {
-            GlStateManager.color(red.getValueObject().floatValue() / 255, green.getValueObject().floatValue() / 255, blue.getValueObject().floatValue() / 255, 1.0F);
-            RenderingUtils.drawImg(new ResourceLocation("icons/logo.png"), 0, 2, 64, 64);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderingUtils.drawImg(new ResourceLocation("icons/logo2.png"), 0, 2, 64, 64);
         }
         var offset = 0;
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
