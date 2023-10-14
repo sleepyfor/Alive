@@ -347,6 +347,10 @@ public class GuiIngame extends Gui
             this.overlayPlayerList.renderPlayerlist(i, scoreboard, scoreobjective1);
         }
 
+        if(mc.isSingleplayer())
+            Client.INSTANCE.updateRPC("In a singleplayer world", "");
+        else
+            Client.INSTANCE.updateRPC("Playing on " + mc.getCurrentServerData().serverIP, "");
         Render2DEvent render2DEvent = new Render2DEvent(scaledresolution, partialTicks);
         Client.INSTANCE.getEventBus().call(render2DEvent);
 

@@ -1404,6 +1404,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage
         } catch (IOException ignored) {
 
         }
+        Client.INSTANCE.stopRPC();
         this.running = false;
     }
 

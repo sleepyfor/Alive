@@ -15,6 +15,7 @@ import fr.litarvan.openauth.microsoft.MicrosoftAuthResult;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticationException;
 import fr.litarvan.openauth.microsoft.MicrosoftAuthenticator;
 import fr.litarvan.openauth.microsoft.model.response.MinecraftProfile;
+import net.alive.Client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -281,6 +282,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
                     e.printStackTrace();
                 }
                 break;
+            case 4:
+                Minecraft.getMinecraft().shutdown();
+                break;
             case 5:
                 this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()));
                 break;
@@ -490,6 +494,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
+        Client.INSTANCE.updateRPC("In The Menus", "");
         GlStateManager.disableAlpha();
         this.renderSkybox(mouseX, mouseY, partialTicks);
         GlStateManager.enableAlpha();

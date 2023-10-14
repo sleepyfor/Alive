@@ -14,18 +14,20 @@ import java.awt.*;
 public class ModuleTab extends Tab {
 
     @Setter
-    public double x, y;
+    public double x, y, initY;
     public Module module;
 
     public ModuleTab(String text, double x, double  y, double width, double height, TabGui parent, Module module) {
         super(text, width, height, parent);
         this.x = x;
-        this.y = y;
+        this.y = parent.originalY;
+        this.initY = y;
         this.module = module;
     }
 
     @Override
     public void drawTab() {
+        this.y = initY + parent.anchorY - 68;
         Gui.drawRect(x, y, x + width, y + height, new Color(10, 10, 10, 200).getRGB());
         Client.INSTANCE.getFontManager().getArial17().drawStringWithShadow(text, (float) (x + 2 + offset), (float) (y + 6), color);
         super.drawTab();

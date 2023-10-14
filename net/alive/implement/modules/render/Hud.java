@@ -16,6 +16,7 @@ import net.alive.manager.module.ModuleManager;
 import net.alive.manager.value.ValueManager;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
@@ -37,6 +38,7 @@ public class Hud extends Module {
     public Hud() {
         modes.add("Traditional");
         modes.add("Alive");
+        modes.add("Logo");
     }
 
     @Subscribe
@@ -49,13 +51,16 @@ public class Hud extends Module {
             case "Traditional":
                 traditionalHud(event);
                 break;
+            case "Logo":
+                logoHud(event);
+                break;
         }
     });
 
     public void aliveHud(Render2DEvent event) {
         var scaledWidth = event.getScaledResolution().getScaledWidth();
         var font = Client.INSTANCE.getFontManager().getArial17();
-        var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + (Client.INSTANCE.isInDev() ? Client.INSTANCE.getDevVersion() : "");
+        var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + "" + (Client.INSTANCE.isInDev() ? " " + Client.INSTANCE.getDevVersion() : "");
         var fps = "FPS: \247F" + Minecraft.getDebugFPS();
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
         var nameWidth = font.getWidth(title);
@@ -75,7 +80,7 @@ public class Hud extends Module {
                 }
             }
         }
-//        Client.INSTANCE.getTabGui().draw(3, offset - 15);
+        Client.INSTANCE.getTabGui().draw(3, offset - 15);
     }
 
     public void traditionalHud(Render2DEvent event) {
@@ -106,9 +111,38 @@ public class Hud extends Module {
         }
     }
 
+    public void logoHud(Render2DEvent event) {
+        var scaledWidth = event.getScaledResolution().getScaledWidth();
+        var font = Client.INSTANCE.getFontManager().getArial17();
+        var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + (Client.INSTANCE.isInDev() ? Client.INSTANCE.getDevVersion() : "");
+        var fps = "FPS: \247F" + Minecraft.getDebugFPS();
+        var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
+
+        if (tabgui.getValueObject())
+            Client.INSTANCE.getTabGui().draw(3, 48);
+
+        if (watermark.getValueObject()) {
+            GlStateManager.color(red.getValueObject().floatValue() / 255, green.getValueObject().floatValue() / 255, blue.getValueObject().floatValue() / 255, 1.0F);
+            RenderingUtils.drawImg(new ResourceLocation("icons/logo.png"), 0, 2, 64, 64);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        }
+        var offset = 0;
+        List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
+        sortedModules.sort(Comparator.comparingDouble(mod -> -font.getWidth(mod.getDisplayName())));
+        if (arraylist.getValueObject()) {
+            for (Module module : sortedModules) {
+                var moduleWidth = font.getWidth(module.getDisplayName());
+                if (module.isEnabled()) {
+                    font.drawStringWithShadow(module.getDisplayName(), scaledWidth - moduleWidth - 3, offset + 3, color);
+                    offset += 10;
+                }
+            }
+        }
+    }
+
     @Subscribe
     public Listener<KeyboardEvent> doKeyboard = new Listener<>(event -> {
-        if (tabgui.getValueObject() && getMode("Mode").equalsIgnoreCase("Traditional"))
+//        if (tabgui.getValueObject() && (getMode("Mode").equalsIgnoreCase("Traditional")) || getMode("Mode").equalsIgnoreCase("Logo"))
             Client.INSTANCE.getTabGui().doKeys(event.getKey());
     });
 }

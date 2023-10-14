@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public class TabGui {
     public List<CategoryTab> categories;
-    public double x, y, y2, originalY;
+    public double x, y, y2, originalY, anchorX, anchorY;
     public List<ModuleTab> modules;
     public Category selected;
     public int index, index2;
@@ -30,8 +30,10 @@ public class TabGui {
 
 
     public void draw(double x, double y) {
+        this.anchorX = x;
         this.x = x;
         this.originalY = y;
+        this.anchorY = originalY + 10;
         int i = 0;
         for (CategoryTab categoryTab : categories) {
             i += categoryTab.height;
@@ -95,7 +97,7 @@ public class TabGui {
                 index2 = 0;
                 for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selected)) {
                     y2 += 20;
-                    modules.add(new ModuleTab(module.getName(), 64, originalY + y2, 60, 20, this, module));
+                    modules.add(new ModuleTab(module.getName(), 64, y2 + 58, 60, 20, this, module));
                     extended = true;
                     selection = modules.get(0).module;
                 }
