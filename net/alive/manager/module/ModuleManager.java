@@ -10,6 +10,7 @@ import net.alive.implement.modules.movement.Speed;
 import net.alive.implement.modules.movement.Sprint;
 import net.alive.implement.modules.render.ClickGUI;
 import net.alive.implement.modules.render.Hud;
+import net.alive.implement.modules.world.ChestStealer;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -28,6 +29,7 @@ public class ModuleManager {
         registerModule(KillAura.class, new KillAura());
         registerModule(Speed.class, new Speed());
         registerModule(NoSlowDown.class, new NoSlowDown());
+        registerModule(ChestStealer.class, new ChestStealer());
     }
 
     public void registerModule(Class modClass, Module module) {

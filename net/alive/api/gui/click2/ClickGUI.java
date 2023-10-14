@@ -33,32 +33,40 @@ import java.util.Objects;
 
 public class ClickGUI extends GuiScreen {
 
-    public float x = 100, y = 50, width = 309, height = 350;
+    public float x = 100, y = 50, width = 309, height = 350, anchorX, anchorY;
     public List<CategoryButton> categories = new ArrayList<>();
     public List<Component> components = new ArrayList<>();
-    public List<BooleanComponent> booleanButtons = new ArrayList<>();
-    public List<StringComponent> stringButtons = new ArrayList<>();
-    public List<DoubleComponent> doubleSliders = new ArrayList<>();
-    public List<IntegerComponent> integerSliders = new ArrayList<>();
     public List<ModuleButton> modules = new ArrayList<>();
     public Category current = Category.RENDER;
-    public boolean settingsScreen;
+    public boolean settingsScreen, dragging;
     public Module settingsModule;
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+       draw(mouseX, mouseY, 200, 50);
+    }
+
+    public void draw(int mouseX, int mouseY, float x, float y){
+        if(dragging){
+            anchorX = mouseX- (width / 2);
+            anchorY = mouseY - (height / 2);
+        }
+        this.x = anchorX;
+        this.y = anchorY;
         drawBackground();
-        drawCategories(mouseX, mouseY);
+        drawCategories();
         drawModules(mouseX, mouseY);
         if (settingsScreen)
-            drawValues(mouseX, mouseY);
+            drawValues(mouseX);
     }
 
     public void initClickGUI() {
+        x = anchorX;
+        y = anchorY;
         current = Category.COMBAT;
-        booleanButtons.clear();
         categories.clear();
         modules.clear();
+        components.clear();
         for (Category category : Category.values())
             categories.add(new CategoryButton(category));
         for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(current))
@@ -67,7 +75,8 @@ public class ClickGUI extends GuiScreen {
 
     @Override
     public void initGui() {
-
+        x = anchorX;
+        y = anchorY;
     }
 
     public void drawBackground() {
@@ -87,7 +96,7 @@ public class ClickGUI extends GuiScreen {
                     new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
     }
 
-    public void drawCategories(int mouseX, int mouseY) {
+    public void drawCategories() {
         var blur = net.alive.implement.modules.render.ClickGUI.blur.getValueObject();
         int i = 0;
         for (CategoryButton categoryButton : categories) {
@@ -128,7 +137,7 @@ public class ClickGUI extends GuiScreen {
         }
     }
 
-    public void drawValues(int mouseX, int mouseY) {
+    public void drawValues(int mouseX) {
         if (!settingsScreen) return;
         var blur = net.alive.implement.modules.render.ClickGUI.blur.getValueObject();
         CustomFontRenderer font = Client.INSTANCE.getFontManager().arial15;
@@ -201,39 +210,59 @@ public class ClickGUI extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         switch (mouseButton) {
             case 0:
-                for (CategoryButton categoryButton : categories)
+                if(isHovered(mouseX, mouseY, x, y, width, height))
+                    dragging = true;
+                if(isHovered(mouseX, mouseY, x, y, width, 60))
+                    dragging = false;
+                for (CategoryButton categoryButton : categories) {
                     if (isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height) &&
                             !Client.INSTANCE.getModuleManager().getModulesByCategory(categoryButton.category).isEmpty())
                         modules.clear();
+                    if(isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height))
+                        dragging = false;
+                }
                 for (CategoryButton categoryButton : categories) {
                     boolean hovered = isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height);
                     if (hovered) {
                         current = categoryButton.category;
                         settingsScreen = false;
+                        dragging = false;
                     }
                     for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(current))
-                        if (hovered)
+                        if (hovered) {
                             modules.add(new ModuleButton(module));
+                            dragging = false;
+                        }
                 }
                 for (ModuleButton moduleButton : modules) {
                     boolean hovered = isHovered(mouseX, mouseY, moduleButton.x, moduleButton.y, moduleButton.width, moduleButton.height);
-                    if (hovered)
+                    if (hovered) {
                         moduleButton.module.toggle();
+                        dragging = false;
+                    }
                 }
                 if (settingsScreen) {
                     for (Component component : components) {
                         if (component instanceof StringComponent)
-                            if (isHovered(mouseX, mouseY, component.x, component.y, component.width, component.height))
+                            if (isHovered(mouseX, mouseY, component.x, component.y, component.width, component.height)) {
                                 ((StringComponent) component).setValue();
+                                dragging = false;
+                            }
                         if (component instanceof BooleanComponent)
-                            if (isHovered(mouseX, mouseY, component.x, component.y, component.width, component.height))
+                            if (isHovered(mouseX, mouseY, component.x, component.y, component.width, component.height)) {
                                 ((BooleanComponent) component).value.setValueObject(!((BooleanComponent) component).value.getValueObject());
+                                dragging = false;
+                            }
                         if (component instanceof DoubleComponent)
-                            if (isHovered(mouseX, mouseY, component.getX() + 6, component.getY() + 14, component.getWidth() - 3, 5))
+                            if (isHovered(mouseX, mouseY, component.getX() + 6, component.getY() + 14, component.getWidth() - 3, 5)) {
                                 ((DoubleComponent) component).sliding = true;
+                                dragging = false;
+                            }
                         if (component instanceof IntegerComponent)
-                            if (isHovered(mouseX, mouseY, component.getX() + 6, component.getY() + 14, component.getWidth() - 3, 5))
+                            if (isHovered(mouseX, mouseY, component.getX() + 6, component.getY() + 14, component.getWidth() - 3, 5)) {
                                 ((IntegerComponent) component).sliding = true;
+                                dragging = false;
+                            }
                     }
                 }
                 break;
@@ -293,6 +322,11 @@ public class ClickGUI extends GuiScreen {
                 ((DoubleComponent) component).sliding = false;
             if (component instanceof IntegerComponent)
                 ((IntegerComponent) component).sliding = false;
+        }
+        if(dragging) {
+            dragging = false;
+            anchorX = mouseX- (width / 2);
+            anchorY = mouseY - (height / 2);
         }
     }
 
