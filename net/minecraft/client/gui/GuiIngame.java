@@ -3,12 +3,16 @@ package net.minecraft.client.gui;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
 import net.alive.Client;
 import net.alive.implement.events.render.Render2DEvent;
+import net.alive.implement.modules.render.Hud;
+import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -361,17 +365,25 @@ public class GuiIngame extends Gui
 
     protected void renderTooltip(ScaledResolution sr, float partialTicks)
     {
+        int color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
+        int color2 = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 60).getRGB();
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
         {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.mc.getTextureManager().bindTexture(widgetsTexPath);
             EntityPlayer entityplayer = (EntityPlayer)this.mc.getRenderViewEntity();
             int i = sr.getScaledWidth() / 2;
-            float f = this.zLevel;
-            this.zLevel = -90.0F;
-            this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-            this.drawTexturedModalRect(i - 91 - 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
-            this.zLevel = f;
+            if(Hud.blur.getValueObject())
+                RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, i - 91, sr.getScaledHeight() - 22,
+                        i + 91, sr.getScaledHeight() - 1, new Color(0, 0, 0, 125).getRGB());
+            RenderingUtils.drawRectangle(i - 91, sr.getScaledHeight() - 22,
+                    i + 91, sr.getScaledHeight() - 1, new Color(0, 0, 0, Hud.blur.getValueObject() ? 80 : 125).getRGB());
+            RenderingUtils.drawRectangle(i - 91, sr.getScaledHeight() - 1.5f, i + 91, sr.getScaledHeight() - 1, color);
+            RenderingUtils.drawRectangle(i - 91, sr.getScaledHeight() - 22.5f, i + 91, sr.getScaledHeight() - 22, color);
+            RenderingUtils.drawRectangle(i - 91, sr.getScaledHeight() - 22, i - 90.5f, sr.getScaledHeight() - 1.5f, color);
+            RenderingUtils.drawRectangle(i + 90.5f, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight() - 1.5f, color);
+            RenderingUtils.drawRectangle(i - 91 + 0.5f + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22,
+                    i - 69 - 0.5f + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 1.5f, color2);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
@@ -1060,13 +1072,15 @@ public class GuiIngame extends Gui
 
             if (f > 0.0F)
             {
+                Gui.drawRect(0,0,0,0,0);
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.pushMatrix();
                 float f1 = 1.0F + f / 5.0F;
                 GlStateManager.translate((float)(xPos + 8), (float)(yPos + 12), 0.0F);
                 GlStateManager.scale(1.0F / f1, (f1 + 1.0F) / 2.0F, 1.0F);
                 GlStateManager.translate((float)(-(xPos + 8)), (float)(-(yPos + 12)), 0.0F);
             }
-
+            Gui.drawRect(0,0,0,0,0);
             this.itemRenderer.renderItemAndEffectIntoGUI(itemstack, xPos, yPos);
 
             if (f > 0.0F)

@@ -1,15 +1,23 @@
 package net.alive.utils.gui;
 
 import lombok.var;
+import net.alive.api.blur.impl.BlurShader;
+import net.alive.api.blur.impl.KawaseBlur;
+import net.alive.utils.shader.StencilUtility;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.glHint;
 
 public class RenderingUtils {
 
@@ -68,11 +76,78 @@ public class RenderingUtils {
         GlStateManager.popMatrix();
     }
 
+    public static void resetColor() {
+        GlStateManager.color(1, 1, 1, 1);
+    }
+
+    public static void bindTexture(int texture) {
+        glBindTexture(GL_TEXTURE_2D, texture);
+    }
+
+    public static Framebuffer createFramebuffer(Framebuffer framebuffer, boolean depth) {
+        if (framebuffer == null || framebuffer.framebufferWidth != Minecraft.getMinecraft().displayWidth || framebuffer.framebufferHeight != Minecraft.getMinecraft().displayHeight) {
+            if (framebuffer != null) {
+                framebuffer.deleteFramebuffer();
+            }
+            return new Framebuffer(Minecraft.getMinecraft().displayWidth, Minecraft.getMinecraft().displayHeight, depth);
+        }
+        return framebuffer;
+    }
+
     public static void glColor(int color) {
         var red = (color >> 16 & 0xFF) / 255.0f;
         var green = (color >> 8 & 0xFF) / 255.0f;
         var blue = (color & 0xFF) / 255.0f;
         var alpha = (color >> 24 & 0xFF) / 255.0f;
         GL11.glColor4f(red, green, blue, alpha);
+    }
+
+    public static void drawBlurredRect(BlurType type, double x, double y, double x1, double y1, int color) {
+        switch (type) {
+            case KAWASE:
+                StencilUtility.initStencilToWrite();
+                enableGL2D();
+                glColor(color);
+                Gui.drawRect(x, y, x1, y1, -1);
+                disableGL2D();
+                StencilUtility.readStencilBuffer(1);
+                KawaseBlur.renderBlur(1, 8);
+                StencilUtility.uninitStencilBuffer();
+                break;
+            case NORMAL:
+                StencilUtility.initStencilToWrite();
+                enableGL2D();
+                glColor(color);
+                Gui.drawRect(x, y, x1, y1, new Color(0,0,0,30).getRGB());
+                disableGL2D();
+                StencilUtility.readStencilBuffer(1);
+                BlurShader.renderBlur(6);
+                StencilUtility.uninitStencilBuffer();
+                break;
+        }
+    }
+
+    public static void enableGL2D() {
+        glDisable(2929);
+        glEnable(3042);
+        glDisable(3553);
+        glBlendFunc(770, 771);
+        glDepthMask(true);
+        glEnable(2848);
+        glHint(3154, 4354);
+        glHint(3155, 4354);
+    }
+
+    public static void disableGL2D() {
+        glEnable(3553);
+        glDisable(3042);
+        glEnable(2929);
+        glDisable(2848);
+        glHint(3154, 4352);
+        glHint(3155, 4352);
+    }
+
+    public enum BlurType {
+        KAWASE, NORMAL
     }
 }

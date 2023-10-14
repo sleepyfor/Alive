@@ -31,6 +31,7 @@ public class Hud extends Module {
     public Value<Boolean> arraylist = new Value<>("Arraylist", true);
     public Value<Boolean> watermark = new Value<>("Watermark", true);
     public Value<Boolean> tabgui = new Value<>("TabGUI", true);
+    public static Value<Boolean> blur = new Value<>("Blur", true);
     public static Value<Double> red = new Value<>("Red", 168., 0, 255, 1);
     public static Value<Double> green = new Value<>("Green", 204., 0, 255, 1);
     public static Value<Double> blue = new Value<>("Blue", 255., 0, 255, 1);
@@ -117,12 +118,13 @@ public class Hud extends Module {
         var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + (Client.INSTANCE.isInDev() ? Client.INSTANCE.getDevVersion() : "");
         var fps = "FPS: \247F" + Minecraft.getDebugFPS();
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
+        var color2 = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 155).getRGB();
 
         if (tabgui.getValueObject())
             Client.INSTANCE.getTabGui().draw(3, 48);
 
         if (watermark.getValueObject()) {
-            RenderingUtils.drawImg(new ResourceLocation("icons/logo2.png"), 0, 2, 64, 64);
+            RenderingUtils.drawImg(new ResourceLocation("icons/logo3.png"), 0, 2, 64, 64);
         }
         var offset = 0;
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
@@ -131,8 +133,8 @@ public class Hud extends Module {
             for (Module module : sortedModules) {
                 var moduleWidth = font.getWidth(module.getDisplayName());
                 if (module.isEnabled()) {
-                    font.drawStringWithShadow(module.getDisplayName(), scaledWidth - moduleWidth - 3, offset + 3, color);
-                    offset += 10;
+                    font.drawStringWithShadow(module.getDisplayName(), scaledWidth - moduleWidth - 3, offset + 3, blur.getValueObject() ? color2 : color);
+                    offset += 11;
                 }
             }
         }

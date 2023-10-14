@@ -8,6 +8,7 @@ import net.alive.api.gui.tab.tabs.impl.ModuleTab;
 import net.alive.api.module.Category;
 import net.alive.api.module.Module;
 import net.alive.implement.modules.render.Hud;
+import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.ChatComponentText;
@@ -35,15 +36,23 @@ public class TabGui {
         this.originalY = y;
         this.anchorY = originalY + 10;
         int i = 0;
+        if (Hud.blur.getValueObject())
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX(), anchorY + 10, getX() + 60, getY() + 20, new Color(10, 10, 10, 200).getRGB());
         for (CategoryTab categoryTab : categories) {
             i += categoryTab.height;
             this.y = y + i;
             categoryTab.drawTab();
             if (selected == categoryTab.category) {
-                categoryTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
+                if(Hud.blur.getValueObject())
+                    categoryTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 155).getRGB();
+                else
+                    categoryTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
                 categoryTab.offset = 2;
             } else {
-                categoryTab.color = -1;
+                if (Hud.blur.getValueObject())
+                    categoryTab.color = new Color(255, 255, 255, 155).getRGB();
+                else
+                    categoryTab.color = -1;
                 categoryTab.offset = 0;
             }
             for (ModuleTab moduleTab : modules) {

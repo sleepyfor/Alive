@@ -11,6 +11,7 @@ import org.lwjgl.input.Keyboard;
 public class ClickGUI extends Module {
 
     public static Value<String> mode = new Value<>("Mode", "New", "New", "Old");
+    public static Value<Boolean> blur = new Value<>("Blur", true);
 
     @Override
     public void onEnable() {

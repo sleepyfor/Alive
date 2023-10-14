@@ -17,6 +17,7 @@ import net.alive.utils.gui.CustomFontRenderer;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -70,42 +71,58 @@ public class ClickGUI extends GuiScreen {
     }
 
     public void drawBackground() {
-        var color = new Color(5, 5, 5, 255).getRGB();
-        Gui.drawRect(x - 1, y - 1, x + width + 9, y + height, new Color(20, 20, 20, 250).getRGB());
+        var blur = net.alive.implement.modules.render.ClickGUI.blur.getValueObject();
+        var color = new Color(5, 5, 5, blur ? 90 : 255).getRGB();
+        if(blur)
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, x - 1, y - 1, x + width + 9, y + height, -1);
+        Gui.drawRect(x - 1, y - 1, x + width + 9, y + height, new Color(20, 20, 20, blur ? 190 : 250).getRGB());
+        if(blur)
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, x - 1, y + 59, x + width + 9, y + 60, -1);
         Gui.drawRect(x - 1, y + 59, x + width + 9, y + 60, color);
-        Gui.drawRect(x + 109, y + 59, x + 110, y + height, color);
+        if(blur)
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, x - 1, y + 59, x + width + 9, y + 60, -1);
+        Gui.drawRect(x + 110, y + 59, x + 111, y + height, color);
         if (settingsScreen)
             Client.INSTANCE.getFontManager().getArial17().drawStringWithShadow("Settings for: \247F" + settingsModule.getName(), x + 112, y + height - 10,
-                    new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB());
+                    new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
     }
 
     public void drawCategories(int mouseX, int mouseY) {
+        var blur = net.alive.implement.modules.render.ClickGUI.blur.getValueObject();
         int i = 0;
         for (CategoryButton categoryButton : categories) {
             categoryButton.setX(x + 10 + i);
             categoryButton.setY(y + 8);
             categoryButton.setWidth(40);
             categoryButton.setHeight(40);
+            if(blur)
+                GlStateManager.color(1, 1, 1, 0.6f);
             RenderingUtils.drawImg(new ResourceLocation("/icons/" + categoryButton.category.realName + ".png"),
                     categoryButton.x, categoryButton.y, 40, 40);
+            if(blur)
+                RenderingUtils.resetColor();
             i += 64;
         }
     }
 
     public void drawModules(int mouseX, int mouseY) {
+        var blur = net.alive.implement.modules.render.ClickGUI.blur.getValueObject();
         int i = 0;
         for (ModuleButton moduleButton : modules) {
             moduleButton.setX(x - 1);
-            moduleButton.setY(y + 60 + i);
+            moduleButton.setY(y + 61 + i);
             moduleButton.setWidth(110);
             moduleButton.setHeight(25);
             boolean hovered = isHovered(mouseX, mouseY, moduleButton.x, moduleButton.y, moduleButton.width, moduleButton.height);
             int activeColor = hovered ? 25 : 20;
             int enabledColor = moduleButton.module.isEnabled() ? new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
-                    Hud.blue.getValueObject().intValue(), 255).getRGB() : -1;
+                    Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB() : new Color(255, 255, 255, blur ? 150 : 255).getRGB();
             i += 26;
+//            if(blur)
+//                RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, moduleButton.x, moduleButton.y, moduleButton.x + moduleButton.width, moduleButton.y + moduleButton.height,
+//                       -1);
             RenderingUtils.drawRectangle(moduleButton.x, moduleButton.y, moduleButton.x + moduleButton.width, moduleButton.y + moduleButton.height,
-                    new Color(activeColor, activeColor, activeColor, 255).getRGB());
+                    new Color(activeColor, activeColor, activeColor, blur ? 50 : 255).getRGB());
             Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(moduleButton.module.getName() +
                     " [" + Keyboard.getKeyName(moduleButton.module.getKeybind()) + "]", moduleButton.x + moduleButton.width / 2, moduleButton.y + 10, enabledColor);
         }
@@ -113,6 +130,7 @@ public class ClickGUI extends GuiScreen {
 
     public void drawValues(int mouseX, int mouseY) {
         if (!settingsScreen) return;
+        var blur = net.alive.implement.modules.render.ClickGUI.blur.getValueObject();
         CustomFontRenderer font = Client.INSTANCE.getFontManager().arial15;
         int i = 0;
         for (Component component : components) {
@@ -121,12 +139,14 @@ public class ClickGUI extends GuiScreen {
                 component.setY(y + 62 + i);
                 component.setWidth(110);
                 component.setHeight(13);
-                RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height, new Color(20, 20, 20, 255).getRGB());
+                RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
+                        new Color(20, 20, 20, blur ? 60 : 255).getRGB());
                 Client.INSTANCE.getFontManager().arial15.drawStringWithShadow(((StringComponent) component).value.getValueName() + ":",
                         component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
-                                Hud.blue.getValueObject().intValue(), 255).getRGB());
+                                Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
                 font.drawStringWithShadow(((StringComponent) component).value.getValueObject(),
-                        component.x + component.width - font.getWidth(((StringComponent) component).value.getValueObject()) - 2, component.y + 4, -1);
+                        component.x + component.width - font.getWidth(((StringComponent) component).value.getValueObject()) - 2, component.y + 4,
+                        new Color(255, 255, 255, blur ? 150 : 255).getRGB());
             }
             if (component instanceof BooleanComponent) {
                 component.setX(x + 111);
@@ -134,11 +154,12 @@ public class ClickGUI extends GuiScreen {
                 component.setWidth(110);
                 component.setHeight(13);
                 var name = ((BooleanComponent) component).value.getValueObject() ? "Yes" : "No";
-                RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height, new Color(20, 20, 20, 255).getRGB());
+                RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
+                        new Color(20, 20, 20, blur ? 60 : 255).getRGB());
                 Client.INSTANCE.getFontManager().arial15.drawStringWithShadow(((BooleanComponent) component).value.getValueName() + ":",
                         component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
-                                Hud.blue.getValueObject().intValue(), 255).getRGB());
-                font.drawStringWithShadow(name, component.x + component.width - font.getWidth(name) - 2, component.y + 4, -1);
+                                Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
+                font.drawStringWithShadow(name, component.x + component.width - font.getWidth(name) - 2, component.y + 4, new Color(255, 255, 255, blur ? 150 : 255).getRGB());
             }
             if (component instanceof DoubleComponent) {
                 component.setX(x + 111);
@@ -160,15 +181,17 @@ public class ClickGUI extends GuiScreen {
                 if (val.getValueObject() < min)
                     val.setValueObject(min);
                 RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
-                        new Color(20, 20, 20, 255).getRGB());
+                        new Color(20, 20, 20, blur ? 60 : 255).getRGB());
                 Client.INSTANCE.getFontManager().arial15.drawStringWithShadow(((DoubleComponent) component).value.getValueName() + ":",
                         component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
-                                Hud.blue.getValueObject().intValue(), 255).getRGB());
-                font.drawStringWithShadow(valRounded, component.x + component.width - font.getWidth(valRounded) - 2, component.y + 4, -1);
-                RenderingUtils.drawRectangle(component.x + 6, component.y + 16, component.x + component.width - 3, component.y + 17, -1);
+                                Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
+                font.drawStringWithShadow(valRounded, component.x + component.width - font.getWidth(valRounded) - 2, component.y + 4,
+                        new Color(255, 255, 255, blur ? 150 : 255).getRGB());
+                RenderingUtils.drawRectangle(component.x + 6, component.y + 16, component.x + component.width - 3, component.y + 17,
+                        new Color(255, 255, 255, blur ? 150 : 255).getRGB());
                 RenderingUtils.drawRectangle((float) (comX + (val.getValueObject() - min) /
                         (max - min) * comWid) - 2, component.y + 14, (float) (comX + ((val.getValueObject() - min) /
-                        (max - min)) * comWid), component.y + 19, -1);
+                        (max - min)) * comWid), component.y + 19, new Color(255, 255, 255, blur ? 150 : 255).getRGB());
             }
             i += (component instanceof IntegerComponent || component instanceof DoubleComponent) ? 20 : 13;
         }
