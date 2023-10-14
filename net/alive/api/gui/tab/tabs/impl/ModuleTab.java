@@ -8,6 +8,7 @@ import net.alive.api.module.Category;
 import net.alive.api.module.Module;
 import net.alive.api.module.ModuleInfo;
 import net.alive.implement.modules.render.ClickGui;
+import net.alive.implement.modules.render.Hud;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.gui.Gui;
 
@@ -34,8 +35,8 @@ public class ModuleTab extends Tab {
     public void drawTab() {
         this.y = initY + parent.anchorY - 68;
         off = RenderingUtils.progressiveAnimation(off, 2, 0.2);
-        if(!parent.extended)
-            Gui.drawRect(x, y, x + off, y + height, new Color(10, 10, 10, ClickGui.blur.getValueObject() ? 90 : 200).getRGB());
+        if(parent.extended && !Hud.blur.getValueObject())
+            Gui.drawRect(x, y, x + parent.off, y + height, new Color(10, 10, 10, 200).getRGB());
         Client.INSTANCE.getFontManager().getArial17().drawStringWithShadow(text, (float) (x + 3 + offset), (float) (y + 6), color);
         super.drawTab();
     }

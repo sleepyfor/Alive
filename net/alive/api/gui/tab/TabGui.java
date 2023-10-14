@@ -1,5 +1,6 @@
 package net.alive.api.gui.tab;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import lombok.Getter;
 import net.alive.Client;
 import net.alive.api.gui.tab.tabs.Tab;
@@ -37,12 +38,12 @@ public class TabGui {
         this.originalY = y;
         this.anchorY = originalY + 10;
         int i = 0;
+        if(extended)
+                off = RenderingUtils.progressiveAnimation(off, 70, 0.8);
         if (Hud.blur.getValueObject()) {
             RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX(), anchorY + 10, getX() + 60, getY() + 20, new Color(10, 10, 10, 200).getRGB());
-            if (extended) {
-                off = RenderingUtils.progressiveAnimation(off, getX() + 142, 0.6);
-                RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX() + 62, anchorY + 10, off, anchorY + (modules.size() * 20) + 9, new Color(10, 10, 10, 200).getRGB());
-            }
+            if (extended)
+                RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX() + 62, anchorY + 10, getX() + 62 + off, anchorY + (modules.size() * 20) + 9, new Color(10, 10, 10, 200).getRGB());
         }
         for (CategoryTab categoryTab : categories) {
             i += categoryTab.height;
@@ -87,7 +88,7 @@ public class TabGui {
     public void doKeys(int key) {
         if (key == Keyboard.KEY_DOWN) {
             if (!extended) {
-                off = getX() + 62;
+                    off = 0;
                 index++;
                 if (index > 4) index = 0;
             } else {
@@ -99,7 +100,7 @@ public class TabGui {
         }
         if (key == Keyboard.KEY_UP) {
             if (!extended) {
-                off = getX() + 62;
+                    off = 0;
                 index--;
                 if (index < 0) index = 4;
             } else {
@@ -112,10 +113,10 @@ public class TabGui {
         if (key == Keyboard.KEY_RIGHT) {
             if (!extended) {
                 index2 = 0;
+                    off = 0;
                 for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selected)) {
                     y2 += 20;
                     modules.add(new ModuleTab(module.getName(), 64, y2 + 58, 60, 20, this, module));
-                    off = getX() + 62;
                     extended = true;
                     selection = modules.get(0).module;
                 }
