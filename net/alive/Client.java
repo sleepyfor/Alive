@@ -6,7 +6,6 @@ import net.alive.api.event.IEvent;
 import net.alive.api.file.Config;
 import net.alive.api.gui.click.ClickGUI;
 import net.alive.api.gui.tab.TabGui;
-import net.alive.api.module.Category;
 import net.alive.implement.modules.movement.Sprint;
 import net.alive.implement.modules.render.Hud;
 import net.alive.manager.font.FontManager;
@@ -17,7 +16,6 @@ import net.arikia.dev.drpc.DiscordRichPresence;
 import net.arikia.dev.drpc.DiscordUser;
 import net.arikia.dev.drpc.callbacks.ReadyCallback;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.Sys;
 
 import java.awt.*;
 import java.io.File;
@@ -31,7 +29,6 @@ public enum Client {
     private final File DIR = new File(Minecraft.getMinecraft().mcDataDir, clientName);
     private EventBus<? super IEvent> eventBus;
     private final boolean isInDev = true;
-    private net.alive.api.gui.click2.ClickGUI newClickGUI;
     private ModuleManager moduleManager;
     private FontManager fontManager;
     private boolean running = true;
@@ -54,8 +51,6 @@ public enum Client {
         moduleManager.getModule(Sprint.class).setState(true);
         tabGui.initMate();
         clickGUI.initClickGUI();
-        newClickGUI = new net.alive.api.gui.click2.ClickGUI();
-        newClickGUI.initClickGUI();
         config = new Config();
         config.createDirectory();
         try {

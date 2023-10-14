@@ -2,6 +2,7 @@ package net.alive.api.gui.click;
 
 import lombok.var;
 import net.alive.Client;
+import net.alive.api.gui.click.component.Component;
 import net.alive.api.gui.click.component.button.CategoryButton;
 import net.alive.api.gui.click.component.button.ModuleButton;
 import net.alive.api.gui.click.component.value.BooleanComponent;
@@ -11,12 +12,15 @@ import net.alive.api.gui.click.component.value.StringComponent;
 import net.alive.api.module.Category;
 import net.alive.api.module.Module;
 import net.alive.api.value.Value;
-import net.alive.implement.modules.movement.Flight;
+import net.alive.implement.modules.render.ClickGui;
 import net.alive.implement.modules.render.Hud;
+import net.alive.utils.gui.CustomFontRenderer;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -29,31 +33,40 @@ import java.util.List;
 
 public class ClickGUI extends GuiScreen {
 
-    public float x = 100, y = 50, width = 300, height = 400;
+    public float x = 100, y = 50, width = 309, height = 350, anchorX, anchorY;
     public List<CategoryButton> categories = new ArrayList<>();
-    public List<BooleanComponent> booleanButtons = new ArrayList<>();
-    public List<StringComponent> stringButtons = new ArrayList<>();
-    public List<DoubleComponent> doubleSliders = new ArrayList<>();
-    public List<IntegerComponent> integerSliders = new ArrayList<>();
+    public List<Component> components = new ArrayList<>();
     public List<ModuleButton> modules = new ArrayList<>();
     public Category current = Category.RENDER;
-    public boolean settingsScreen;
+    public boolean settingsScreen, dragging;
     public Module settingsModule;
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        drawBackground();
-        drawCategories(mouseX, mouseY);
-        drawModules(mouseX, mouseY);
-        if (settingsScreen)
-            drawValues(mouseX, mouseY);
+       draw(mouseX, mouseY, 200, 50);
     }
 
-    public void initClickGUI(){
+    public void draw(int mouseX, int mouseY, float x, float y){
+        if(dragging){
+            anchorX = mouseX- (width / 2);
+            anchorY = mouseY - (height / 2);
+        }
+        this.x = anchorX;
+        this.y = anchorY;
+        drawBackground();
+        drawCategories();
+        drawModules(mouseX, mouseY);
+        if (settingsScreen)
+            drawValues(mouseX);
+    }
+
+    public void initClickGUI() {
+        x = anchorX;
+        y = anchorY;
         current = Category.COMBAT;
-        booleanButtons.clear();
         categories.clear();
         modules.clear();
+        components.clear();
         for (Category category : Category.values())
             categories.add(new CategoryButton(category));
         for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(current))
@@ -62,99 +75,134 @@ public class ClickGUI extends GuiScreen {
 
     @Override
     public void initGui() {
-
+        x = anchorX;
+        y = anchorY;
     }
 
     public void drawBackground() {
-        var color = new Color(255, 161, 205, 255).getRGB();
-        Gui.drawRect(x - 1, y - 1, x + width + 105, y + height + 1, new Color(20, 20, 20, 250).getRGB());
-        Gui.drawRect(x + width + 106, y - 1, x + width + 105, y + height + 1, color);
-        Gui.drawRect(x + width + 106, y + height, x, y + height + 1, color);
-        Gui.drawRect(x - 1, y - 1, x, y + height + 1, color);
-        Gui.drawRect(x - 1, y - 1, x + width + 106, y, color);
-        Gui.drawRect(x - 1, y + 25, x + width + 106, y + 26, color);
-        Gui.drawRect(x + 80, y + 25, x + 81, y + height + 1, color);
+        var blur = ClickGui.blur.getValueObject();
+        var color = new Color(5, 5, 5, blur ? 90 : 255).getRGB();
+        if(blur)
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, x - 1, y - 1, x + width + 9, y + height, -1);
+        Gui.drawRect(x - 1, y - 1, x + width + 9, y + height, new Color(20, 20, 20, blur ? 190 : 250).getRGB());
+        if(blur)
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, x - 1, y + 59, x + width + 9, y + 60, -1);
+        Gui.drawRect(x - 1, y + 59, x + width + 9, y + 60, color);
+        if(blur)
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, x - 1, y + 59, x + width + 9, y + 60, -1);
+        Gui.drawRect(x + 110, y + 59, x + 111, y + height, color);
         if (settingsScreen)
-            Client.INSTANCE.getFontManager().getArial17().drawStringWithShadow("Settings for: \247F" + settingsModule.getName(),
-                    x + 82, y + height - 10, new Color(255, 161, 205, 255).getRGB());
+            Client.INSTANCE.getFontManager().getArial17().drawStringWithShadow("Settings for: \247F" + settingsModule.getName(), x + 112, y + height - 10,
+                    new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
     }
 
-    public void drawCategories(int mouseX, int mouseY) {
+    public void drawCategories() {
+        var blur = ClickGui.blur.getValueObject();
         int i = 0;
         for (CategoryButton categoryButton : categories) {
-            boolean hovered = isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height);
-            boolean active = categoryButton.category == current;
-            int color = active ? 25 : (hovered ? 25 : 50);
-            categoryButton.setX(x + i);
-            categoryButton.setY(y);
-            categoryButton.setWidth(80);
-            categoryButton.setHeight(25);
-            RenderingUtils.drawRectangle(categoryButton.x, categoryButton.y, categoryButton.x + categoryButton.width, categoryButton.y +
-                    categoryButton.height, new Color(color, color, color, 255).getRGB());
-            if (categoryButton.category != Category.RENDER)
-                RenderingUtils.drawRectangle(categoryButton.x + categoryButton.width, categoryButton.y, categoryButton.x + categoryButton.width + 2,
-                        categoryButton.y + categoryButton.height, new Color(255, 161, 205, 255).getRGB());
-            categoryButton.font.drawCenteredString(categoryButton.category.realName, this.x + i + (categoryButton.width / 2), this.y + 10, -1);
-            i += 81;
+            categoryButton.setX(x + 10 + i);
+            categoryButton.setY(y + 8);
+            categoryButton.setWidth(40);
+            categoryButton.setHeight(40);
+            if(blur)
+                GlStateManager.color(1, 1, 1, 0.6f);
+            RenderingUtils.drawImg(new ResourceLocation("/icons/" + categoryButton.category.realName + ".png"),
+                    categoryButton.x, categoryButton.y, 40, 40);
+            if(blur)
+                RenderingUtils.resetColor();
+            i += 64;
         }
     }
 
     public void drawModules(int mouseX, int mouseY) {
+        var blur = ClickGui.blur.getValueObject();
         int i = 0;
         for (ModuleButton moduleButton : modules) {
-            moduleButton.setX(x);
-            moduleButton.setY(y + 27 + i);
-            moduleButton.setWidth(80);
+            moduleButton.setX(x - 1);
+            moduleButton.setY(y + 61 + i);
+            moduleButton.setWidth(110);
             moduleButton.setHeight(25);
             boolean hovered = isHovered(mouseX, mouseY, moduleButton.x, moduleButton.y, moduleButton.width, moduleButton.height);
-            int activeColor = moduleButton.module.isEnabled() ? 25 : (hovered ? 25 : 50);
-            int enabledColor = moduleButton.module.isEnabled() ? new Color(255, 161, 205, 255).getRGB() : -1;
+            int activeColor = hovered ? 25 : 20;
+            int enabledColor = moduleButton.module.isEnabled() ? new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
+                    Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB() : new Color(255, 255, 255, blur ? 150 : 255).getRGB();
             i += 26;
+//            if(blur)
+//                RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, moduleButton.x, moduleButton.y, moduleButton.x + moduleButton.width, moduleButton.y + moduleButton.height,
+//                       -1);
             RenderingUtils.drawRectangle(moduleButton.x, moduleButton.y, moduleButton.x + moduleButton.width, moduleButton.y + moduleButton.height,
-                    new Color(activeColor, activeColor, activeColor, 255).getRGB());
-            RenderingUtils.drawRectangle(moduleButton.x, moduleButton.y + moduleButton.height, moduleButton.x + moduleButton.width,
-                    moduleButton.y + moduleButton.height + 1, new Color(255, 161, 205, 255).getRGB());
+                    new Color(activeColor, activeColor, activeColor, blur ? 50 : 255).getRGB());
             Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(moduleButton.module.getName() +
-                            " [" + Keyboard.getKeyName(moduleButton.module.getKeybind()) + "]", moduleButton.x + moduleButton.width / 2, moduleButton.y + 10, enabledColor);
+                    " [" + Keyboard.getKeyName(moduleButton.module.getKeybind()) + "]", moduleButton.x + moduleButton.width / 2, moduleButton.y + 10, enabledColor);
         }
     }
 
-    public void drawValues(int mouseX, int mouseY) {
-        if (settingsScreen) {
-            int i = 0;
-            for (BooleanComponent booleanComponent : booleanButtons) {
-                i += 25;
-                booleanComponent.setX(x + 100);
-                booleanComponent.setY(y + 15 + i);
-                booleanComponent.setWidth(15);
-                booleanComponent.setHeight(7.5f);
-                boolean offset = booleanComponent.value.getValueObject();
-                RenderingUtils.drawRectangle(booleanComponent.x, booleanComponent.y + 5, booleanComponent.x + booleanComponent.width,
-                        booleanComponent.y + booleanComponent.height + 5, new Color(100, 100, 100, 255).getRGB());
-                RenderingUtils.drawRectangle((!offset ? 0 : 7.5f) + booleanComponent.x, booleanComponent.y + 5,
-                        (!offset ? 0 : 7.5f) + booleanComponent.x + (booleanComponent.width / 2),
-                        booleanComponent.y + booleanComponent.height + 5, booleanComponent.value.getValueObject() ?
-                                new Color(0, 255, 0, 255).getRGB() : new Color(255, 0, 0, 255).getRGB());
-                Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(booleanComponent.value.getValueName(),
-                        booleanComponent.x + booleanComponent.width / 2, booleanComponent.y - 5, -1);
+    public void drawValues(int mouseX) {
+        if (!settingsScreen) return;
+        var blur = ClickGui.blur.getValueObject();
+        CustomFontRenderer font = Client.INSTANCE.getFontManager().arial15;
+        int i = 0;
+        for (Component component : components) {
+            if (component instanceof StringComponent) {
+                component.setX(x + 111);
+                component.setY(y + 62 + i);
+                component.setWidth(110);
+                component.setHeight(13);
+                RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
+                        new Color(20, 20, 20, blur ? 60 : 255).getRGB());
+                Client.INSTANCE.getFontManager().arial15.drawStringWithShadow(((StringComponent) component).value.getValueName() + ":",
+                        component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
+                                Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
+                font.drawStringWithShadow(((StringComponent) component).value.getValueObject(),
+                        component.x + component.width - font.getWidth(((StringComponent) component).value.getValueObject()) - 2, component.y + 4,
+                        new Color(255, 255, 255, blur ? 150 : 255).getRGB());
             }
-            int i2 = 0;
-            for (StringComponent stringComponent : stringButtons) {
-                i2 += 25;
-                stringComponent.setX(x + 150);
-                stringComponent.setY(y + 15 + i2);
-                stringComponent.setWidth(50);
-                stringComponent.setHeight(11);
-                RenderingUtils.drawRectangle(stringComponent.x, stringComponent.y + 5, stringComponent.x + stringComponent.width,
-                        stringComponent.y + stringComponent.height + 5, new Color(100, 100, 100, 255).getRGB());
-                Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(stringComponent.value.getValueName(),
-                        stringComponent.x + stringComponent.width / 2, stringComponent.y - 5, -1);
-                Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow((String) stringComponent.value.getValueObject(),
-                        stringComponent.x + stringComponent.width / 2, stringComponent.y + 7, -1);
+            if (component instanceof BooleanComponent) {
+                component.setX(x + 111);
+                component.setY(y + 62 + i);
+                component.setWidth(110);
+                component.setHeight(13);
+                var name = ((BooleanComponent) component).value.getValueObject() ? "Yes" : "No";
+                RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
+                        new Color(20, 20, 20, blur ? 60 : 255).getRGB());
+                Client.INSTANCE.getFontManager().arial15.drawStringWithShadow(((BooleanComponent) component).value.getValueName() + ":",
+                        component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
+                                Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
+                font.drawStringWithShadow(name, component.x + component.width - font.getWidth(name) - 2, component.y + 4, new Color(255, 255, 255, blur ? 150 : 255).getRGB());
             }
-            int i3 = 0;
-            drawDoubleSliders(mouseX, mouseY, i3);
-            drawIntegerSliders(mouseX, mouseY, i3);
+            if (component instanceof DoubleComponent) {
+                component.setX(x + 111);
+                component.setY(y + 62 + i);
+                component.setWidth(110);
+                component.setHeight(20);
+                var val = ((DoubleComponent) component).value;
+                double max = val.getMax();
+                double min = val.getMin();
+                double inc = val.getInc();
+                var decimal = new DecimalFormat("#.####");
+                var valRounded = decimal.format(val.getValueObject());
+                var comX = component.x + 8;
+                var comWid = component.width - 11;
+                if (((DoubleComponent) component).isSliding())
+                    ((DoubleComponent) component).value.setValueObject(round(((mouseX + 2) - (comX)) * ((max - min) / (comWid)) + min, inc));
+                if (val.getValueObject() > max)
+                    val.setValueObject(max);
+                if (val.getValueObject() < min)
+                    val.setValueObject(min);
+                RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
+                        new Color(20, 20, 20, blur ? 60 : 255).getRGB());
+                Client.INSTANCE.getFontManager().arial15.drawStringWithShadow(((DoubleComponent) component).value.getValueName() + ":",
+                        component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
+                                Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
+                font.drawStringWithShadow(valRounded, component.x + component.width - font.getWidth(valRounded) - 2, component.y + 4,
+                        new Color(255, 255, 255, blur ? 150 : 255).getRGB());
+                RenderingUtils.drawRectangle(component.x + 6, component.y + 16, component.x + component.width - 3, component.y + 17,
+                        new Color(255, 255, 255, blur ? 150 : 255).getRGB());
+                RenderingUtils.drawRectangle((float) (comX + (val.getValueObject() - min) /
+                        (max - min) * comWid) - 2, component.y + 14, (float) (comX + ((val.getValueObject() - min) /
+                        (max - min)) * comWid), component.y + 19, new Color(255, 255, 255, blur ? 150 : 255).getRGB());
+            }
+            i += (component instanceof IntegerComponent || component instanceof DoubleComponent) ? 20 : 13;
         }
     }
 
@@ -162,60 +210,77 @@ public class ClickGUI extends GuiScreen {
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         switch (mouseButton) {
             case 0:
-                if (isHovered(mouseX, mouseY, x, y, x + 308, y / 2))
-                    modules.clear();
+                if(isHovered(mouseX, mouseY, x, y, width, height))
+                    dragging = true;
+                if(isHovered(mouseX, mouseY, x, y, width, 60))
+                    dragging = false;
+                for (CategoryButton categoryButton : categories) {
+                    if (isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height) &&
+                            !Client.INSTANCE.getModuleManager().getModulesByCategory(categoryButton.category).isEmpty())
+                        modules.clear();
+                    if(isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height))
+                        dragging = false;
+                }
                 for (CategoryButton categoryButton : categories) {
                     boolean hovered = isHovered(mouseX, mouseY, categoryButton.x, categoryButton.y, categoryButton.width, categoryButton.height);
                     if (hovered) {
                         current = categoryButton.category;
                         settingsScreen = false;
+                        dragging = false;
                     }
                     for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(current))
-                        if (hovered)
+                        if (hovered) {
                             modules.add(new ModuleButton(module));
+                            dragging = false;
+                        }
                 }
                 for (ModuleButton moduleButton : modules) {
                     boolean hovered = isHovered(mouseX, mouseY, moduleButton.x, moduleButton.y, moduleButton.width, moduleButton.height);
-                    if (hovered)
+                    if (hovered) {
                         moduleButton.module.toggle();
+                        dragging = false;
+                    }
                 }
                 if (settingsScreen) {
-                    for (BooleanComponent booleanComponent : booleanButtons)
-                        if (isHovered(mouseX, mouseY, booleanComponent.x, booleanComponent.y + 5,
-                                booleanComponent.width, booleanComponent.height))
-                            booleanComponent.value.setValueObject(!booleanComponent.value.getValueObject());
-                    for (StringComponent stringComponent : stringButtons)
-                        if (isHovered(mouseX, mouseY, stringComponent.x, stringComponent.y + 5,
-                                stringComponent.width, stringComponent.height))
-                            stringComponent.setValue();
-                    for (DoubleComponent doubleComponent : doubleSliders)
-                        if (isHovered(mouseX, mouseY, doubleComponent.getX(), doubleComponent.getY() + 5, doubleComponent.getWidth(), doubleComponent.getHeight())) {
-                            doubleComponent.sliding = true;
-                        }
-                    for (IntegerComponent integerComponent : integerSliders)
-                        if (isHovered(mouseX, mouseY, integerComponent.getX(), integerComponent.getY() + 5, integerComponent.getWidth(), integerComponent.getHeight())) {
-                            integerComponent.sliding = true;
-                        }
+                    for (Component component : components) {
+                        if (component instanceof StringComponent)
+                            if (isHovered(mouseX, mouseY, component.x, component.y, component.width, component.height)) {
+                                ((StringComponent) component).setValue();
+                                dragging = false;
+                            }
+                        if (component instanceof BooleanComponent)
+                            if (isHovered(mouseX, mouseY, component.x, component.y, component.width, component.height)) {
+                                ((BooleanComponent) component).value.setValueObject(!((BooleanComponent) component).value.getValueObject());
+                                dragging = false;
+                            }
+                        if (component instanceof DoubleComponent)
+                            if (isHovered(mouseX, mouseY, component.getX() + 6, component.getY() + 14, component.getWidth() - 3, 5)) {
+                                ((DoubleComponent) component).sliding = true;
+                                dragging = false;
+                            }
+                        if (component instanceof IntegerComponent)
+                            if (isHovered(mouseX, mouseY, component.getX() + 6, component.getY() + 14, component.getWidth() - 3, 5)) {
+                                ((IntegerComponent) component).sliding = true;
+                                dragging = false;
+                            }
+                    }
                 }
                 break;
             case 1:
                 for (ModuleButton moduleButton : modules) {
                     boolean hovered = isHovered(mouseX, mouseY, moduleButton.x, moduleButton.y, moduleButton.width, moduleButton.height);
                     if (hovered) {
-                        booleanButtons.clear();
-                        stringButtons.clear();
-                        doubleSliders.clear();
-                        integerSliders.clear();
+                        components.clear();
                         settingsScreen = true;
                         for (Value value : moduleButton.module.getValues()) {
                             if (value.getValueObject() instanceof Boolean)
-                                booleanButtons.add(new BooleanComponent(value));
+                                components.add(new BooleanComponent(value));
                             if (value.getValueObject() instanceof String)
-                                stringButtons.add(new StringComponent(value));
+                                components.add(new StringComponent(value));
                             if (value.getValueObject() instanceof Double)
-                                doubleSliders.add(new DoubleComponent(value));
+                                components.add(new DoubleComponent(value));
                             if (value.getValueObject() instanceof Integer)
-                                integerSliders.add(new IntegerComponent(value));
+                                components.add(new IntegerComponent(value));
                         }
                         settingsModule = moduleButton.module;
                     }
@@ -252,10 +317,17 @@ public class ClickGUI extends GuiScreen {
 
     @Override
     protected void mouseReleased(int mouseX, int mouseY, int state) {
-        for (DoubleComponent doubleComponent : doubleSliders)
-            doubleComponent.sliding = false;
-        for (IntegerComponent integerComponent : integerSliders)
-            integerComponent.sliding = false;
+        for (Component component : components) {
+            if (component instanceof DoubleComponent)
+                ((DoubleComponent) component).sliding = false;
+            if (component instanceof IntegerComponent)
+                ((IntegerComponent) component).sliding = false;
+        }
+        if(dragging) {
+            dragging = false;
+            anchorX = mouseX- (width / 2);
+            anchorY = mouseY - (height / 2);
+        }
     }
 
     @Override
@@ -272,83 +344,5 @@ public class ClickGUI extends GuiScreen {
 
     public boolean isHovered(int mouseX, int mouseY, float x, float y, float width, float height) {
         return mouseX > x && mouseX < x + width && mouseY > y && mouseY < y + height;
-    }
-
-    public void drawDoubleSliders(int mouseX, int mouseY, int i) {
-        for (DoubleComponent doubleComponent : doubleSliders) {
-            i += 25;
-            var val = doubleComponent.getValue();
-            double max = val.getMax();
-            double min = val.getMin();
-            double inc = val.getInc();
-            double perc = (double) (width - 3) / (max - min);
-            double valRounded = round(val.getValueObject(), val.getInc());
-            double barWidth = (perc * valRounded - perc * min + 2);
-            var decimal = new DecimalFormat("#.####");
-            if (doubleComponent.isSliding())
-                doubleComponent.value.setValueObject(round(((mouseX + 2) - doubleComponent.getX()) * (max - min) / doubleComponent.getWidth() + min, inc));
-            if (val.getValueObject() > max)
-                val.setValueObject(max);
-            if (val.getValueObject() < min)
-                val.setValueObject(min);
-            doubleComponent.setX(x + 235);
-            doubleComponent.setY(y + 15 + i);
-            doubleComponent.setWidth(140);
-            doubleComponent.setHeight(11);
-            RenderingUtils.drawRectangle(doubleComponent.x, doubleComponent.y + 5, doubleComponent.x + doubleComponent.width,
-                    doubleComponent.y + doubleComponent.height + 5, new Color(100, 100, 100, 255).getRGB());
-            RenderingUtils.drawRectangle(doubleComponent.x, doubleComponent.y + 5, (float) (doubleComponent.x +
-                            ((doubleComponent.value.getValueObject() - doubleComponent.value.getMin()) /
-                                    (doubleComponent.value.getMax() - doubleComponent.value.getMin())) * doubleComponent.width),
-                    doubleComponent.y + doubleComponent.height + 5, -1);
-            RenderingUtils.drawRectangle((float) (doubleComponent.x + ((doubleComponent.value.getValueObject() - doubleComponent.value.getMin()) /
-                            (doubleComponent.value.getMax() - doubleComponent.value.getMin())) * doubleComponent.width) - 2,
-                    doubleComponent.y + 5, (float) (doubleComponent.x +
-                            ((doubleComponent.value.getValueObject() - doubleComponent.value.getMin()) /
-                                    (doubleComponent.value.getMax() - doubleComponent.value.getMin())) * doubleComponent.width),
-                    doubleComponent.y + doubleComponent.height + 5, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
-                            Hud.blue.getValueObject().intValue(), 255).getRGB());
-            Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(doubleComponent.value.getValueName() + " -> " +
-                            decimal.format(doubleComponent.value.getValueObject()),
-                    doubleComponent.x + doubleComponent.width / 2, doubleComponent.y - 5, -1);
-        }
-    }
-
-    public void drawIntegerSliders(int mouseX, int mouseY, int i) {
-        for (IntegerComponent integerComponent : integerSliders) {
-            i += 25;
-            var val = integerComponent.getValue();
-            int max = (int) val.getMax();
-            int min = (int) val.getMin();
-            int inc = (int) val.getInc();
-            //double perc = (double) (width - 3) / (max - min);
-            double valRounded = round(val.getValueObject(), val.getInc());
-            //double barWidth = (perc * valRounded - perc * min + 2);
-            if (integerComponent.isSliding())
-                integerComponent.value.setValueObject((int) round(((mouseX + 2) - integerComponent.getX()) * (max - min) / integerComponent.getWidth() + min, inc));
-            if (val.getValueObject() > max)
-                val.setValueObject(max);
-            if (val.getValueObject() < min)
-                val.setValueObject(min);
-            integerComponent.setX(x + 235);
-            integerComponent.setY(y + 15 + i);
-            integerComponent.setWidth(100);
-            integerComponent.setHeight(11);
-            RenderingUtils.drawRectangle(integerComponent.x, integerComponent.y + 5, integerComponent.x + integerComponent.width,
-                    integerComponent.y + integerComponent.height + 5, new Color(100, 100, 100, 255).getRGB());
-            RenderingUtils.drawRectangle(integerComponent.x, integerComponent.y + 5, (float) (integerComponent.x +
-                            ((integerComponent.value.getValueObject() - integerComponent.value.getMin()) /
-                                    (integerComponent.value.getMax() - integerComponent.value.getMin())) * integerComponent.width),
-                    integerComponent.y + integerComponent.height + 5, -1);
-            RenderingUtils.drawRectangle((float) (integerComponent.x + ((integerComponent.value.getValueObject() - integerComponent.value.getMin()) /
-                            (integerComponent.value.getMax() - integerComponent.value.getMin())) * integerComponent.width) - 2,
-                    integerComponent.y + 5, (float) (integerComponent.x +
-                            ((integerComponent.value.getValueObject() - integerComponent.value.getMin()) /
-                                    (integerComponent.value.getMax() - integerComponent.value.getMin())) * integerComponent.width),
-                    integerComponent.y + integerComponent.height + 5,
-                    new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB());
-            Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(integerComponent.value.getValueName() + " -> " + integerComponent.value.getValueObject(),
-                    integerComponent.x + integerComponent.width / 2, integerComponent.y - 5, -1);
-        }
     }
 }

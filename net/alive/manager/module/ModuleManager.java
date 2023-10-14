@@ -8,7 +8,7 @@ import net.alive.implement.modules.movement.Flight;
 import net.alive.implement.modules.movement.NoSlowDown;
 import net.alive.implement.modules.movement.Speed;
 import net.alive.implement.modules.movement.Sprint;
-import net.alive.implement.modules.render.ClickGUI;
+import net.alive.implement.modules.render.ClickGui;
 import net.alive.implement.modules.render.Hud;
 import net.alive.implement.modules.world.ChestStealer;
 
@@ -24,7 +24,7 @@ public class ModuleManager {
     public ModuleManager() {
         registerModule(Hud.class, new Hud());
         registerModule(Sprint.class, new Sprint());
-        registerModule(ClickGUI.class, new ClickGUI());
+        registerModule(ClickGui.class, new ClickGui());
         registerModule(Flight.class, new Flight());
         registerModule(KillAura.class, new KillAura());
         registerModule(Speed.class, new Speed());
