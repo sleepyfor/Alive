@@ -31,6 +31,7 @@ public class Hud extends Module {
     public Value mode = new Value<>("Mode", "Alive", modes);
     public Value<Boolean> arraylist = new Value<>("Arraylist", true);
     public Value<Boolean> watermark = new Value<>("Watermark", true);
+    public static Value<Boolean> suffix = new Value<>("Suffix", true);
     public Value<Boolean> tabgui = new Value<>("TabGUI", true);
     public static Value<Boolean> blur = new Value<>("Blur", true);
     public static Value<Double> red = new Value<>("Red", 168., 0, 255, 1);
@@ -152,7 +153,7 @@ public class Hud extends Module {
                 var moduleWidth = font.getWidth(module.getDisplayName());
                 if (module.isEnabled()) {
                     font.drawStringWithShadow(module.getDisplayName(), scaledWidth - moduleWidth - 3, offset + 3, blur.getValueObject() ? color2 : color);
-                    offset += 11;
+                    offset += 10;
                 }
             }
         }

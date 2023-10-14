@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import net.alive.implement.modules.render.Hud;
 
 @Getter @Setter
 public class Module {
@@ -80,7 +81,7 @@ public class Module {
     }
 
     public String getDisplayName() {
-        return suffix != null ? name + " \247f" + suffix : name;
+        return Hud.suffix.getValueObject() ? (suffix != null ? name + " \247f" + suffix : name) : name;
     }
 
     public String getMode(String mode){
