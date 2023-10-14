@@ -1,6 +1,8 @@
 package net.minecraft.client.gui.inventory;
 
 import java.io.IOException;
+
+import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.achievement.GuiAchievements;
@@ -13,6 +15,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import org.lwjgl.opengl.GL11;
 
 public class GuiInventory extends InventoryEffectRenderer
 {
@@ -21,11 +24,13 @@ public class GuiInventory extends InventoryEffectRenderer
 
     /** The old y position of the mouse pointer */
     private float oldMouseY;
+    private float scale;
 
     public GuiInventory(EntityPlayer p_i1094_1_)
     {
         super(p_i1094_1_.inventoryContainer);
         this.allowUserInput = true;
+        scale = 0;
     }
 
     /**
@@ -47,6 +52,7 @@ public class GuiInventory extends InventoryEffectRenderer
      */
     public void initGui()
     {
+        scale = 0;
         this.buttonList.clear();
 
         if (this.mc.playerController.isInCreativeMode())

@@ -3,6 +3,8 @@ package net.minecraft.client.gui;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+
+import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +13,7 @@ import net.minecraft.util.IChatComponent;
 import net.minecraft.util.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.opengl.GL11;
 
 public class GuiNewChat extends Gui
 {
@@ -21,10 +24,12 @@ public class GuiNewChat extends Gui
     private final List<ChatLine> field_146253_i = Lists.<ChatLine>newArrayList();
     private int scrollPos;
     private boolean isScrolled;
+    private float length;
 
     public GuiNewChat(Minecraft mcIn)
     {
         this.mc = mcIn;
+        length = 0;
     }
 
     public void drawChat(int p_146230_1_)
@@ -79,10 +84,11 @@ public class GuiNewChat extends Gui
                             {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
-                                drawRect(i2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
+                                length = (float) RenderingUtils.progressiveAnimation(length, i2 + l + 4, 0.2);
+                                drawRect(i2, j2 - 9, length, j2, l1 / 2 << 24);
                                 String s = chatline.getChatComponent().getFormattedText();
                                 GlStateManager.enableBlend();
-                                this.mc.fontRendererObj.drawStringWithShadow(s, (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24));
+                                this.mc.fontRendererObj.drawStringWithShadow(s, (float)i2, (float)(j2 - 8), -1);
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
                             }
@@ -118,6 +124,7 @@ public class GuiNewChat extends Gui
      */
     public void clearChatMessages()
     {
+        length = 0;
         this.field_146253_i.clear();
         this.chatLines.clear();
         this.sentMessages.clear();
@@ -177,6 +184,7 @@ public class GuiNewChat extends Gui
 
     public void refreshChat()
     {
+        length = 0;
         this.field_146253_i.clear();
         this.resetScroll();
 
@@ -208,6 +216,7 @@ public class GuiNewChat extends Gui
      */
     public void resetScroll()
     {
+        length = 0;
         this.scrollPos = 0;
         this.isScrolled = false;
     }

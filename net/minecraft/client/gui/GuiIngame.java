@@ -99,6 +99,7 @@ public class GuiIngame extends Gui
     /** Used with updateCounter to make the heart bar flash */
     private long healthUpdateCounter = 0L;
     private static final String __OBFID = "CL_00000661";
+    private float loc;
 
     public GuiIngame(Minecraft mcIn)
     {
@@ -366,7 +367,7 @@ public class GuiIngame extends Gui
     protected void renderTooltip(ScaledResolution sr, float partialTicks)
     {
         int color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
-        int color2 = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 60).getRGB();
+        int color2 = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 80).getRGB();
         if (this.mc.getRenderViewEntity() instanceof EntityPlayer)
         {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -382,8 +383,9 @@ public class GuiIngame extends Gui
             RenderingUtils.drawRectangle(i - 91, sr.getScaledHeight() - 22.5f, i + 91, sr.getScaledHeight() - 22, color);
             RenderingUtils.drawRectangle(i - 91, sr.getScaledHeight() - 22, i - 90.5f, sr.getScaledHeight() - 1.5f, color);
             RenderingUtils.drawRectangle(i + 90.5f, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight() - 1.5f, color);
-            RenderingUtils.drawRectangle(i - 91 + 0.5f + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22,
-                    i - 69 - 0.5f + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 1.5f, color2);
+            loc = (float) RenderingUtils.progressiveAnimation(loc, i - 91 + 0.5f + entityplayer.inventory.currentItem * 20, 0.8);
+            RenderingUtils.drawRectangle(loc, sr.getScaledHeight() - 22,
+                    loc + 21, sr.getScaledHeight() - 1.5f, color2);
             GlStateManager.enableRescaleNormal();
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);

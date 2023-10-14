@@ -11,6 +11,7 @@ import net.alive.implement.modules.render.Hud;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import org.lwjgl.input.Keyboard;
@@ -22,7 +23,7 @@ import java.util.List;
 @Getter
 public class TabGui {
     public List<CategoryTab> categories;
-    public double x, y, y2, originalY, anchorX, anchorY;
+    public double x, y, y2, originalY, anchorX, anchorY, off;
     public List<ModuleTab> modules;
     public Category selected;
     public int index, index2;
@@ -36,8 +37,13 @@ public class TabGui {
         this.originalY = y;
         this.anchorY = originalY + 10;
         int i = 0;
-        if (Hud.blur.getValueObject())
+        if (Hud.blur.getValueObject()) {
             RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX(), anchorY + 10, getX() + 60, getY() + 20, new Color(10, 10, 10, 200).getRGB());
+            if (extended) {
+                off = RenderingUtils.progressiveAnimation(off, getX() + 142, 0.6);
+                RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX() + 62, anchorY + 10, off, anchorY + (modules.size() * 20) + 9, new Color(10, 10, 10, 200).getRGB());
+            }
+        }
         for (CategoryTab categoryTab : categories) {
             i += categoryTab.height;
             this.y = y + i;
@@ -47,21 +53,21 @@ public class TabGui {
                     categoryTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 155).getRGB();
                 else
                     categoryTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
-                categoryTab.offset = 2;
+                categoryTab.offset = RenderingUtils.progressiveAnimation(categoryTab.offset, 2, 0.2);
             } else {
                 if (Hud.blur.getValueObject())
                     categoryTab.color = new Color(255, 255, 255, 155).getRGB();
                 else
                     categoryTab.color = -1;
-                categoryTab.offset = 0;
+                categoryTab.offset = RenderingUtils.progressiveAnimation(categoryTab.offset, 0, 0.2);
             }
             for (ModuleTab moduleTab : modules) {
                 if (selection == moduleTab.module) {
                     moduleTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
-                    moduleTab.offset = 2;
+                    moduleTab.offset = RenderingUtils.progressiveAnimation(moduleTab.offset, 2, 0.002);
                 } else {
                     moduleTab.color = -1;
-                    moduleTab.offset = 0;
+                    moduleTab.offset = RenderingUtils.progressiveAnimation(moduleTab.offset, 0, 0.002);
                 }
             }
         }
@@ -81,6 +87,7 @@ public class TabGui {
     public void doKeys(int key) {
         if (key == Keyboard.KEY_DOWN) {
             if (!extended) {
+                off = getX() + 62;
                 index++;
                 if (index > 4) index = 0;
             } else {
@@ -92,6 +99,7 @@ public class TabGui {
         }
         if (key == Keyboard.KEY_UP) {
             if (!extended) {
+                off = getX() + 62;
                 index--;
                 if (index < 0) index = 4;
             } else {
@@ -107,6 +115,7 @@ public class TabGui {
                 for (Module module : Client.INSTANCE.getModuleManager().getModulesByCategory(selected)) {
                     y2 += 20;
                     modules.add(new ModuleTab(module.getName(), 64, y2 + 58, 60, 20, this, module));
+                    off = getX() + 62;
                     extended = true;
                     selection = modules.get(0).module;
                 }

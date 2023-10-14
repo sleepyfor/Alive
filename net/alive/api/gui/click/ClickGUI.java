@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ClickGUI extends GuiScreen {
 
-    public float x = 100, y = 50, width = 309, height = 350, anchorX, anchorY;
+    public float x = 100, y = 50, width = 309, height = 350, anchorX, anchorY, scale;
     public List<CategoryButton> categories = new ArrayList<>();
     public List<Component> components = new ArrayList<>();
     public List<ModuleButton> modules = new ArrayList<>();
@@ -53,16 +53,20 @@ public class ClickGUI extends GuiScreen {
         }
         this.x = anchorX;
         this.y = anchorY;
+        scale = (float) RenderingUtils.progressiveAnimation(scale, 1, 0.6);
+        RenderingUtils.scale(anchorX + (this.width / 2), (float) anchorY + (this.height / 2), scale);
         drawBackground();
         drawCategories();
         drawModules(mouseX, mouseY);
         if (settingsScreen)
             drawValues(mouseX);
+        GlStateManager.popMatrix();
     }
 
     public void initClickGUI() {
         x = anchorX;
         y = anchorY;
+        scale = 0;
         current = Category.COMBAT;
         categories.clear();
         modules.clear();
@@ -77,6 +81,7 @@ public class ClickGUI extends GuiScreen {
     public void initGui() {
         x = anchorX;
         y = anchorY;
+        scale = 0;
     }
 
     public void drawBackground() {

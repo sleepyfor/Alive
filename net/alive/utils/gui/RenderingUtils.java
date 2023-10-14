@@ -3,9 +3,11 @@ package net.alive.utils.gui;
 import lombok.var;
 import net.alive.api.blur.impl.BlurShader;
 import net.alive.api.blur.impl.KawaseBlur;
+import net.alive.utils.math.MathUtils;
 import net.alive.utils.shader.StencilUtility;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -74,6 +76,38 @@ public class RenderingUtils {
         worldrenderer.pos(posX, posY, 0.0D).tex(0.0F * f, 0.0F * f1).endVertex();
         tessellator.draw();
         GlStateManager.popMatrix();
+    }
+
+    public static double progressiveAnimation( double now,  double desired,  double speed) {
+        double dif = Math.abs(now - desired);
+        int fps = Minecraft.getDebugFPS();
+        if (dif > 0.0) {
+            double animationSpeed = MathUtils.roundToDecimalPlace(Math.min(10.0, Math.max(0.05, 144.0 / fps * (dif / 10.0) * speed)), 0.05);
+            if (dif < animationSpeed) {
+                animationSpeed = dif;
+            }
+            if (now < desired) {
+                return now + animationSpeed;
+            }
+            if (now > desired) {
+                return now - animationSpeed;
+            }
+        }
+        return now;
+    }
+
+    public static void scissorBox(int x, int y, int width, int height) {
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        int factor = sr.getScaleFactor();
+        glEnable(GL_SCISSOR_TEST);
+        glScissor(x, y, x + width,  y + height);
+    }
+
+    public static void scale(float x, float y, float scale) {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, 0);
+        GlStateManager.scale(scale, scale, 1);
+        GlStateManager.translate(-x, -y, 0);
     }
 
     public static void resetColor() {

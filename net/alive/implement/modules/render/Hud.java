@@ -1,7 +1,5 @@
 package net.alive.implement.modules.render;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
-import lombok.AllArgsConstructor;
 import lombok.var;
 import net.alive.Client;
 import net.alive.api.event.annotation.Subscribe;
@@ -12,18 +10,14 @@ import net.alive.api.module.ModuleInfo;
 import net.alive.api.value.Value;
 import net.alive.implement.events.keys.KeyboardEvent;
 import net.alive.implement.events.render.Render2DEvent;
-import net.alive.manager.module.ModuleManager;
-import net.alive.manager.value.ValueManager;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ModuleInfo(name = "Hud", displayName = "Hud", keyBind = 0, category = Category.RENDER)
 public class Hud extends Module {
@@ -152,8 +146,13 @@ public class Hud extends Module {
             for (Module module : sortedModules) {
                 var moduleWidth = font.getWidth(module.getDisplayName());
                 if (module.isEnabled()) {
-                    font.drawStringWithShadow(module.getDisplayName(), scaledWidth - moduleWidth - 3, offset + 3, blur.getValueObject() ? color2 : color);
-                    offset += 10;
+                    module.animationX = (float) RenderingUtils.progressiveAnimation(module.animationX, scaledWidth - moduleWidth - 3, 1);
+                    font.drawStringWithShadow(module.getDisplayName(),  module.animationX, offset + 3, blur.getValueObject() ? color2 : color);
+                    module.animationY = (float) RenderingUtils.progressiveAnimation(module.animationY, 10, 1);
+                    offset +=  module.animationY;
+                }else{
+                    module.animationY = (float) RenderingUtils.progressiveAnimation(module.animationY, 0, 1);
+                    offset +=  module.animationY;
                 }
             }
         }

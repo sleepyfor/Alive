@@ -1,10 +1,15 @@
 package net.minecraft.client.gui;
 
+import net.alive.Client;
+import net.alive.implement.modules.render.Hud;
+import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+
+import java.awt.*;
 
 public class GuiButton extends Gui
 {
@@ -32,6 +37,8 @@ public class GuiButton extends Gui
     /** Hides the button completely if false. */
     public boolean visible;
     protected boolean hovered;
+    public float animate;
+    public int red, green, blue;
 
     public GuiButton(int buttonId, int x, int y, String buttonText)
     {
@@ -50,6 +57,10 @@ public class GuiButton extends Gui
         this.width = widthIn;
         this.height = heightIn;
         this.displayString = buttonText;
+        animate = xPosition;
+        red = 255;
+        green = 255;
+        blue = 255;
     }
 
     /**
@@ -77,8 +88,9 @@ public class GuiButton extends Gui
      */
     public void drawButton(Minecraft mc, int mouseX, int mouseY)
     {
-        if (this.visible)
-        {
+        if (this.visible) {
+            int color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
+            int color2 = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 150).getRGB();
             FontRenderer fontrenderer = mc.fontRendererObj;
             mc.getTextureManager().bindTexture(buttonTextures);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -87,21 +99,36 @@ public class GuiButton extends Gui
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             GlStateManager.blendFunc(770, 771);
-            this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46 + i * 20, this.width / 2, this.height);
-            this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+            if (hovered) {
+                animate = (float) RenderingUtils.progressiveAnimation(animate, xPosition + width, 10);
+                red = (int) RenderingUtils.progressiveAnimation(red, Hud.red.getValueObject().intValue(), 5);
+                green = (int) RenderingUtils.progressiveAnimation(red, Hud.green.getValueObject().intValue(), 5);
+                blue = (int) RenderingUtils.progressiveAnimation(red, Hud.blue.getValueObject().intValue(), 5);
+            }else {
+                animate = (float) RenderingUtils.progressiveAnimation(animate, xPosition, 2.5);
+                red = (int) RenderingUtils.progressiveAnimation(red, 255, 0.6);
+                green = (int) RenderingUtils.progressiveAnimation(red, 255, 0.6);
+                blue = (int) RenderingUtils.progressiveAnimation(red, 255, 0.6);
+            }
+//            this.drawTexturedModalRect(this.xPosition, this.yPosition, 0, 46 + i * 20, this.width / 2, this.height);
+//            this.drawTexturedModalRect(this.xPosition + this.width / 2, this.yPosition, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+            RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, xPosition, yPosition, xPosition + width, yPosition + height, new Color(0, 0, 0, 90).getRGB());
+            RenderingUtils.drawRectangle(xPosition, yPosition, xPosition + width, yPosition + height, new Color(0, 0, 0, 60).getRGB());
+            RenderingUtils.drawRectangle(xPosition, yPosition + height - 1, animate, yPosition + height, color2);
             this.mouseDragged(mc, mouseX, mouseY);
-            int j = 14737632;
+            int j = Color.white.getRGB();
 
             if (!this.enabled)
             {
-                j = 10526880;
+                j = Color.white.getRGB();
             }
             else if (this.hovered)
             {
-                j = 16777120;
+                j = new Color(red, green, blue, 255).getRGB();
             }
-
-            this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, j);
+            Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(displayString, this.xPosition + ((float) this.width / 2),
+                    this.yPosition + (float) (this.height - 8) / 2, j);
+            //this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, j);
         }
     }
 

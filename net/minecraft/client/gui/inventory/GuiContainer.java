@@ -3,8 +3,11 @@ package net.minecraft.client.gui.inventory;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Set;
+
+import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -18,6 +21,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 public abstract class GuiContainer extends GuiScreen
 {
@@ -74,6 +78,7 @@ public abstract class GuiContainer extends GuiScreen
     private int lastClickButton;
     private boolean doubleClick;
     private ItemStack shiftClickedSlot;
+    private float scale;
 
     public GuiContainer(Container inventorySlotsIn)
     {
@@ -87,6 +92,8 @@ public abstract class GuiContainer extends GuiScreen
      */
     public void initGui()
     {
+        ScaledResolution sr = new ScaledResolution(mc);
+        scale = 0;
         super.initGui();
         this.mc.thePlayer.openContainer = this.inventorySlots;
         this.guiLeft = (this.width - this.xSize) / 2;
@@ -98,7 +105,8 @@ public abstract class GuiContainer extends GuiScreen
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
-        this.drawDefaultBackground();
+        scale = (float) RenderingUtils.progressiveAnimation(scale, 1, 0.6);
+        RenderingUtils.scale((float) (this.width / 2), (float) (this.height / 2), scale);
         int i = this.guiLeft;
         int j = this.guiTop;
         this.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
@@ -197,6 +205,7 @@ public abstract class GuiContainer extends GuiScreen
         GlStateManager.enableLighting();
         GlStateManager.enableDepth();
         RenderHelper.enableStandardItemLighting();
+        GL11.glPopMatrix();
     }
 
     /**

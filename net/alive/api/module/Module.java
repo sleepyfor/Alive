@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import net.alive.implement.modules.render.Hud;
+import net.minecraft.client.gui.ScaledResolution;
 
 @Getter @Setter
 public class Module {
@@ -18,6 +19,7 @@ public class Module {
     private String name, displayName;
     private ModuleInfo moduleInfo;
     private Category category;
+    public float animationX, animationY;
     private boolean enabled;
     private String suffix;
     private int keybind;
@@ -36,6 +38,9 @@ public class Module {
 
     public void onEnable() {
         Client.INSTANCE.getEventBus().register(this);
+        ScaledResolution sr = new ScaledResolution(mc);
+        animationY = 4;
+        animationX = sr.getScaledWidth() + Client.INSTANCE.getFontManager().getArial17().getWidth(getDisplayName());
     }
 
     public void onDisable() {
