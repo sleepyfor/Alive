@@ -27,10 +27,10 @@ import java.io.IOException;
 public enum Client {
     INSTANCE;
 
-    private final String clientName = "Alive", clientVersion = "0.3.0", devVersion = "(Dev 1)";
+    private final String clientName = "Alive", clientVersion = "0.4.0", devVersion = "(Dev 1)";
     private final File DIR = new File(Minecraft.getMinecraft().mcDataDir, clientName);
     private EventBus<? super IEvent> eventBus;
-    private final boolean isInDev = false;
+    private final boolean isInDev = true;
     private net.alive.api.gui.click2.ClickGUI newClickGUI;
     private ModuleManager moduleManager;
     private FontManager fontManager;

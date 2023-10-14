@@ -16,6 +16,7 @@ import net.alive.manager.module.ModuleManager;
 import net.alive.manager.value.ValueManager;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
@@ -81,7 +82,8 @@ public class Hud extends Module {
                 }
             }
         }
-        Client.INSTANCE.getTabGui().draw(3, offset - 15);
+        if(tabgui.getValueObject())
+            Client.INSTANCE.getTabGui().draw(3, offset - 15);
     }
 
     public void traditionalHud(Render2DEvent event) {
@@ -126,6 +128,9 @@ public class Hud extends Module {
         if (watermark.getValueObject()) {
             RenderingUtils.drawImg(new ResourceLocation("icons/logo3.png"), 0, 2, 64, 64);
         }
+        font.drawStringWithShadow((Client.INSTANCE.isInDev() ? "\2477\247ldev - \247f\247l" : "\247f\247lrelease - \247f\247l") + Client.INSTANCE.getClientVersion(),
+                scaledWidth - font.getWidth((Client.INSTANCE.isInDev() ? "\247ldev - " : "\247lrelease - ") + Client.INSTANCE.getClientVersion()) - 2,
+                event.getScaledResolution().getScaledHeight() - (mc.currentScreen instanceof GuiChat ? 24 : 12), -1);
         var offset = 0;
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
         sortedModules.sort(Comparator.comparingDouble(mod -> -font.getWidth(mod.getDisplayName())));
