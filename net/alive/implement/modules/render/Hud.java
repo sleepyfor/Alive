@@ -67,10 +67,16 @@ public class Hud extends Module {
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
         var nameWidth = font.getWidth(title);
         var fpsWidth = font.getWidth(fps);
+
+        font.drawStringWithShadow((Client.INSTANCE.isInDev() ? "\2477\247ldev - \247f\247l" : "\247f\247lrelease - \247f\247l") + Client.INSTANCE.getClientVersion(),
+                scaledWidth - font.getWidth((Client.INSTANCE.isInDev() ? "\247ldev - " : "\247lrelease - ") + Client.INSTANCE.getClientVersion()) - 2,
+                event.getScaledResolution().getScaledHeight() - (mc.currentScreen instanceof GuiChat ? 24 : 12), -1);
+
         if (watermark.getValueObject()) {
             font.drawStringWithShadow(title, scaledWidth - nameWidth - 3, 3, color);
             font.drawStringWithShadow(fps, scaledWidth - fpsWidth - 3, 13, color);
         }
+
         var offset = 0;
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
         sortedModules.sort(Comparator.comparingDouble(mod -> -font.getWidth(mod.getDisplayName())));
@@ -82,7 +88,8 @@ public class Hud extends Module {
                 }
             }
         }
-        if(tabgui.getValueObject())
+
+        if (tabgui.getValueObject())
             Client.INSTANCE.getTabGui().draw(3, offset - 15);
     }
 
@@ -92,6 +99,10 @@ public class Hud extends Module {
         var title = Client.INSTANCE.getClientName() + " \247Fv" + Client.INSTANCE.getClientVersion() + " " + (Client.INSTANCE.isInDev() ? Client.INSTANCE.getDevVersion() : "");
         var fps = "FPS: \247F" + Minecraft.getDebugFPS();
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
+
+        font.drawStringWithShadow((Client.INSTANCE.isInDev() ? "\2477\247ldev - \247f\247l" : "\247f\247lrelease - \247f\247l") + Client.INSTANCE.getClientVersion(),
+                scaledWidth - font.getWidth((Client.INSTANCE.isInDev() ? "\247ldev - " : "\247lrelease - ") + Client.INSTANCE.getClientVersion()) - 2,
+                event.getScaledResolution().getScaledHeight() - (mc.currentScreen instanceof GuiChat ? 24 : 12), -1);
 
         if (tabgui.getValueObject())
             Client.INSTANCE.getTabGui().draw(3, 4);
@@ -122,15 +133,17 @@ public class Hud extends Module {
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 255).getRGB();
         var color2 = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), 155).getRGB();
 
+        font.drawStringWithShadow((Client.INSTANCE.isInDev() ? "\2477\247ldev - \247f\247l" : "\247f\247lrelease - \247f\247l") + Client.INSTANCE.getClientVersion(),
+                scaledWidth - font.getWidth((Client.INSTANCE.isInDev() ? "\247ldev - " : "\247lrelease - ") + Client.INSTANCE.getClientVersion()) - 2,
+                event.getScaledResolution().getScaledHeight() - (mc.currentScreen instanceof GuiChat ? 24 : 12), -1);
+
         if (tabgui.getValueObject())
             Client.INSTANCE.getTabGui().draw(3, 48);
 
         if (watermark.getValueObject()) {
             RenderingUtils.drawImg(new ResourceLocation("icons/logo3.png"), 0, 2, 64, 64);
         }
-        font.drawStringWithShadow((Client.INSTANCE.isInDev() ? "\2477\247ldev - \247f\247l" : "\247f\247lrelease - \247f\247l") + Client.INSTANCE.getClientVersion(),
-                scaledWidth - font.getWidth((Client.INSTANCE.isInDev() ? "\247ldev - " : "\247lrelease - ") + Client.INSTANCE.getClientVersion()) - 2,
-                event.getScaledResolution().getScaledHeight() - (mc.currentScreen instanceof GuiChat ? 24 : 12), -1);
+
         var offset = 0;
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
         sortedModules.sort(Comparator.comparingDouble(mod -> -font.getWidth(mod.getDisplayName())));
@@ -147,7 +160,7 @@ public class Hud extends Module {
 
     @Subscribe
     public Listener<KeyboardEvent> doKeyboard = new Listener<>(event -> {
-//        if (tabgui.getValueObject() && (getMode("Mode").equalsIgnoreCase("Traditional")) || getMode("Mode").equalsIgnoreCase("Logo"))
+        if (tabgui.getValueObject())
             Client.INSTANCE.getTabGui().doKeys(event.getKey());
     });
 }
