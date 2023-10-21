@@ -1,5 +1,5 @@
-# Alive
-<img align="left" alt="Cover" src="assets/minecraft/icons/logo3.png" height="420" /> 
+<h1 align="center">Town of Host Extreme</h1>
+<img align="left" alt="Cover" src="assets/minecraft/icons/logo3.png" height="420" width="420" /> 
 
 ## To Know
 
