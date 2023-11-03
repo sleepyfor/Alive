@@ -110,7 +110,7 @@ public class WorldRenderer
 
         for (int k = 0; k < ainteger.length; ++k)
         {
-            ainteger[k] = Integer.valueOf(k);
+            ainteger[k] = k;
         }
 
         Arrays.sort(ainteger, new WorldRenderer$1(this, afloat));
@@ -120,7 +120,7 @@ public class WorldRenderer
 
         for (int l1 = 0; (l1 = bitset.nextClearBit(l1)) < ainteger.length; ++l1)
         {
-            int i1 = ainteger[l1].intValue();
+            int i1 = ainteger[l1];
 
             if (i1 != l1)
             {
@@ -129,7 +129,7 @@ public class WorldRenderer
                 this.rawIntBuffer.get(aint);
                 int j1 = i1;
 
-                for (int k1 = ainteger[i1].intValue(); j1 != l1; k1 = ainteger[k1].intValue())
+                for (int k1 = ainteger[i1]; j1 != l1; k1 = ainteger[k1])
                 {
                     this.rawIntBuffer.limit(k1 * l + l);
                     this.rawIntBuffer.position(k1 * l);
@@ -159,7 +159,7 @@ public class WorldRenderer
 
             for (int j2 = 0; j2 < ainteger.length; ++j2)
             {
-                int k2 = ainteger[j2].intValue();
+                int k2 = ainteger[j2];
                 atextureatlassprite[j2] = this.quadSprites[k2];
             }
 
@@ -195,16 +195,16 @@ public class WorldRenderer
 
     private static float func_181665_a(FloatBuffer p_181665_0_, float p_181665_1_, float p_181665_2_, float p_181665_3_, int p_181665_4_, int p_181665_5_)
     {
-        float f = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 0 + 0);
-        float f1 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 0 + 1);
-        float f2 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 0 + 2);
-        float f3 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 1 + 0);
-        float f4 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 1 + 1);
-        float f5 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 1 + 2);
-        float f6 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 2 + 0);
+        float f = p_181665_0_.get(p_181665_5_);
+        float f1 = p_181665_0_.get(p_181665_5_ + 1);
+        float f2 = p_181665_0_.get(p_181665_5_ + 2);
+        float f3 = p_181665_0_.get(p_181665_5_ + p_181665_4_);
+        float f4 = p_181665_0_.get(p_181665_5_ + p_181665_4_ + 1);
+        float f5 = p_181665_0_.get(p_181665_5_ + p_181665_4_ + 2);
+        float f6 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 2);
         float f7 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 2 + 1);
         float f8 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 2 + 2);
-        float f9 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 3 + 0);
+        float f9 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 3);
         float f10 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 3 + 1);
         float f11 = p_181665_0_.get(p_181665_5_ + p_181665_4_ * 3 + 2);
         float f12 = (f + f3 + f6 + f9) * 0.25F - p_181665_1_;
@@ -810,10 +810,6 @@ public class WorldRenderer
                 ++j;
             }
 
-            if (j > 0)
-            {
-                ;
-            }
         }
     }
 
@@ -921,7 +917,7 @@ public class WorldRenderer
             {
                 field_181661_a[VertexFormatElement.EnumType.FLOAT.ordinal()] = 1;
             }
-            catch (NoSuchFieldError var7)
+            catch (NoSuchFieldError ignored)
             {
                 ;
             }
@@ -930,7 +926,7 @@ public class WorldRenderer
             {
                 field_181661_a[VertexFormatElement.EnumType.UINT.ordinal()] = 2;
             }
-            catch (NoSuchFieldError var6)
+            catch (NoSuchFieldError ignored)
             {
                 ;
             }
@@ -939,7 +935,7 @@ public class WorldRenderer
             {
                 field_181661_a[VertexFormatElement.EnumType.INT.ordinal()] = 3;
             }
-            catch (NoSuchFieldError var5)
+            catch (NoSuchFieldError ignored)
             {
                 ;
             }
@@ -948,7 +944,7 @@ public class WorldRenderer
             {
                 field_181661_a[VertexFormatElement.EnumType.USHORT.ordinal()] = 4;
             }
-            catch (NoSuchFieldError var4)
+            catch (NoSuchFieldError ignored)
             {
                 ;
             }
@@ -957,7 +953,7 @@ public class WorldRenderer
             {
                 field_181661_a[VertexFormatElement.EnumType.SHORT.ordinal()] = 5;
             }
-            catch (NoSuchFieldError var3)
+            catch (NoSuchFieldError ignored)
             {
                 ;
             }

@@ -274,23 +274,19 @@ public class Chunk
                     int k1 = 15;
                     int i1 = i + 16 - 1;
 
-                    while (true)
-                    {
+                    do {
                         int j1 = this.getBlockLightOpacity(j, i1, k);
 
-                        if (j1 == 0 && k1 != 15)
-                        {
+                        if (j1 == 0 && k1 != 15) {
                             j1 = 1;
                         }
 
                         k1 -= j1;
 
-                        if (k1 > 0)
-                        {
+                        if (k1 > 0) {
                             ExtendedBlockStorage extendedblockstorage = this.storageArrays[i1 >> 4];
 
-                            if (extendedblockstorage != null)
-                            {
+                            if (extendedblockstorage != null) {
                                 extendedblockstorage.setExtSkylightValue(j, i1 & 15, k, k1);
                                 this.worldObj.notifyLightSet(new BlockPos((this.xPosition << 4) + j, i1, (this.zPosition << 4) + k));
                             }
@@ -298,11 +294,7 @@ public class Chunk
 
                         --i1;
 
-                        if (i1 <= 0 || k1 <= 0)
-                        {
-                            break;
-                        }
-                    }
+                    } while (i1 > 0 && k1 > 0);
                 }
             }
         }
@@ -572,13 +564,7 @@ public class Chunk
         catch (ReportedException reportedexception)
         {
             CrashReportCategory crashreportcategory = reportedexception.getCrashReport().makeCategory("Block being got");
-            crashreportcategory.addCrashSectionCallable("Location", new Callable<String>()
-            {
-                public String call() throws Exception
-                {
-                    return CrashReportCategory.getCoordinateInfo(pos);
-                }
-            });
+            crashreportcategory.addCrashSectionCallable("Location", () -> CrashReportCategory.getCoordinateInfo(pos));
             throw reportedexception;
         }
     }
@@ -624,13 +610,7 @@ public class Chunk
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Getting block state");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being got");
-                crashreportcategory.addCrashSectionCallable("Location", new Callable<String>()
-                {
-                    public String call() throws Exception
-                    {
-                        return CrashReportCategory.getCoordinateInfo(pos);
-                    }
-                });
+                crashreportcategory.addCrashSectionCallable("Location", () -> CrashReportCategory.getCoordinateInfo(pos));
                 throw new ReportedException(crashreport);
             }
         }
@@ -852,7 +832,7 @@ public class Chunk
 
         if (i != this.xPosition || j != this.zPosition)
         {
-            logger.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.xPosition + ", " + this.zPosition + "), " + entityIn, new Object[] {entityIn});
+            logger.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.xPosition + ", " + this.zPosition + "), " + entityIn, entityIn);
             entityIn.setDead();
         }
 
@@ -1052,12 +1032,10 @@ public class Chunk
 
                         if (aentity != null)
                         {
-                            for (int l = 0; l < aentity.length; ++l)
-                            {
-                                entity = aentity[l];
+                            for (Entity value : aentity) {
+                                entity = value;
 
-                                if (entity != entityIn && entity.getEntityBoundingBox().intersectsWith(aabb) && (p_177414_4_ == null || p_177414_4_.apply(entity)))
-                                {
+                                if (entity != entityIn && entity.getEntityBoundingBox().intersectsWith(aabb) && (p_177414_4_ == null || p_177414_4_.apply(entity))) {
                                     listToFill.add(entity);
                                 }
                             }
@@ -1109,7 +1087,7 @@ public class Chunk
 
     public Random getRandomWithSeed(long seed)
     {
-        return new Random(this.worldObj.getSeed() + (long)(this.xPosition * this.xPosition * 4987142) + (long)(this.xPosition * 5947611) + (long)(this.zPosition * this.zPosition) * 4392871L + (long)(this.zPosition * 389711) ^ seed);
+        return new Random(this.worldObj.getSeed() + ((long) this.xPosition * this.xPosition * 4987142) + (this.xPosition * 5947611L) + (long) this.zPosition * this.zPosition * 4392871L + (long)(this.zPosition * 389711) ^ seed);
     }
 
     public boolean isEmpty()
@@ -1294,10 +1272,7 @@ public class Chunk
         }
         else
         {
-            for (int i = 0; i < this.storageArrays.length; ++i)
-            {
-                this.storageArrays[i] = newStorageArrays[i];
-            }
+            System.arraycopy(newStorageArrays, 0, this.storageArrays, 0, this.storageArrays.length);
         }
     }
 

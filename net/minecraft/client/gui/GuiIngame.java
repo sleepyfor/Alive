@@ -607,7 +607,7 @@ public class GuiIngame extends Gui
             ++k;
             ScorePlayerTeam scoreplayerteam1 = scoreboard.getPlayersTeam(((Score) score1).getPlayerName());
             String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, ((Score) score1).getPlayerName());
-            String s2 = EnumChatFormatting.RED + "" + ((Score) score1).getScorePoints();
+            String s2 = EnumChatFormatting.RED + String.valueOf(((Score) score1).getScorePoints());
             int l = k1 - k * this.getFontRenderer().FONT_HEIGHT;
             int i1 = p_180475_2_.getScaledWidth() - b0 + 2;
             drawRect(j - 2, l, i1, l + this.getFontRenderer().FONT_HEIGHT, 1342177280);

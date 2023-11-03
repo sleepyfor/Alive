@@ -295,7 +295,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
             }
             else if (Reflector.ForgeHooksClient_loadEntityShader.exists())
             {
-                Reflector.call(Reflector.ForgeHooksClient_loadEntityShader, new Object[] {entityIn, this});
+                Reflector.call(Reflector.ForgeHooksClient_loadEntityShader, entityIn, this);
             }
         }
     }
@@ -332,15 +332,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
                 this.theShaderGroup.createBindFramebuffers(this.mc.displayWidth, this.mc.displayHeight);
                 this.useShader = true;
             }
-            catch (IOException ioexception)
+            catch (IOException | JsonSyntaxException ioexception)
             {
                 logger.warn((String)("Failed to load shader: " + resourceLocationIn), (Throwable)ioexception);
-                this.shaderIndex = shaderCount;
-                this.useShader = false;
-            }
-            catch (JsonSyntaxException jsonsyntaxexception)
-            {
-                logger.warn((String)("Failed to load shader: " + resourceLocationIn), (Throwable)jsonsyntaxexception);
                 this.shaderIndex = shaderCount;
                 this.useShader = false;
             }
@@ -499,45 +493,34 @@ public class EntityRenderer implements IResourceManagerReloadListener
             List list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand((double)f, (double)f, (double)f), Predicates.and(EntitySelectors.NOT_SPECTATING, new EntityRenderer1(this)));
             double d2 = d1;
 
-            for (int i = 0; i < list.size(); ++i)
-            {
-                Entity entity1 = (Entity)list.get(i);
+            for (Object o : list) {
+                Entity entity1 = (Entity) o;
                 float f1 = entity1.getCollisionBorderSize();
-                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double)f1, (double)f1, (double)f1);
+                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double) f1, (double) f1, (double) f1);
                 MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
 
-                if (axisalignedbb.isVecInside(vec3))
-                {
-                    if (d2 >= 0.0D)
-                    {
+                if (axisalignedbb.isVecInside(vec3)) {
+                    if (d2 >= 0.0D) {
                         this.pointedEntity = entity1;
                         vec33 = movingobjectposition == null ? vec3 : movingobjectposition.hitVec;
                         d2 = 0.0D;
                     }
-                }
-                else if (movingobjectposition != null)
-                {
+                } else if (movingobjectposition != null) {
                     double d3 = vec3.distanceTo(movingobjectposition.hitVec);
 
-                    if (d3 < d2 || d2 == 0.0D)
-                    {
+                    if (d3 < d2 || d2 == 0.0D) {
                         boolean flag2 = false;
 
-                        if (Reflector.ForgeEntity_canRiderInteract.exists())
-                        {
-                            flag2 = Reflector.callBoolean(entity1, Reflector.ForgeEntity_canRiderInteract, new Object[0]);
+                        if (Reflector.ForgeEntity_canRiderInteract.exists()) {
+                            flag2 = Reflector.callBoolean(entity1, Reflector.ForgeEntity_canRiderInteract);
                         }
 
-                        if (entity1 == entity.ridingEntity && !flag2)
-                        {
-                            if (d2 == 0.0D)
-                            {
+                        if (entity1 == entity.ridingEntity && !flag2) {
+                            if (d2 == 0.0D) {
                                 this.pointedEntity = entity1;
                                 vec33 = movingobjectposition.hitVec;
                             }
-                        }
-                        else
-                        {
+                        } else {
                             this.pointedEntity = entity1;
                             vec33 = movingobjectposition.hitVec;
                             d2 = d3;
@@ -734,7 +717,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
                 if (Reflector.ForgeHooksClient_orientBedCamera.exists())
                 {
-                    Reflector.callVoid(Reflector.ForgeHooksClient_orientBedCamera, new Object[] {this.mc.theWorld, blockpos, iblockstate, entity});
+                    Reflector.callVoid(Reflector.ForgeHooksClient_orientBedCamera, this.mc.theWorld, blockpos, iblockstate, entity);
                 }
                 else if (block == Blocks.bed)
                 {
@@ -821,7 +804,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                 }
 
                 Block block1 = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, entity, partialTicks);
-                Object object = Reflector.newInstance(Reflector.EntityViewRenderEvent_CameraSetup_Constructor, new Object[] {this, entity, block1, Float.valueOf(partialTicks), Float.valueOf(f6), Float.valueOf(f7), Float.valueOf(f8)});
+                Object object = Reflector.newInstance(Reflector.EntityViewRenderEvent_CameraSetup_Constructor, this, entity, block1, partialTicks, f6, Float.valueOf(f7), Float.valueOf(f8));
                 Reflector.postForgeBusEvent(object);
                 f8 = Reflector.getFieldValueFloat(object, Reflector.EntityViewRenderEvent_CameraSetup_roll, f8);
                 f7 = Reflector.getFieldValueFloat(object, Reflector.EntityViewRenderEvent_CameraSetup_pitch, f7);
@@ -1091,7 +1074,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
     {
         this.torchFlickerDX = (float)((double)this.torchFlickerDX + (Math.random() - Math.random()) * Math.random() * Math.random());
         this.torchFlickerDX = (float)((double)this.torchFlickerDX * 0.9D);
-        this.torchFlickerX += (this.torchFlickerDX - this.torchFlickerX) * 1.0F;
+        this.torchFlickerX += (this.torchFlickerDX - this.torchFlickerX);
         this.lightmapUpdateNeeded = true;
     }
 
@@ -1386,7 +1369,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                 {
                     if (Reflector.ForgeHooksClient_drawScreen.exists())
                     {
-                        Reflector.callVoid(Reflector.ForgeHooksClient_drawScreen, new Object[] {this.mc.currentScreen, Integer.valueOf(j1), Integer.valueOf(k1), Float.valueOf(p_181560_1_)});
+                        Reflector.callVoid(Reflector.ForgeHooksClient_drawScreen, this.mc.currentScreen, Integer.valueOf(j1), Integer.valueOf(k1), Float.valueOf(p_181560_1_));
                     }
                     else
                     {
@@ -1403,7 +1386,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                         private static final String __OBFID = "CL_00000950";
                         public String call() throws Exception
                         {
-                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d)", new Object[] {Integer.valueOf(j1), Integer.valueOf(k1), Integer.valueOf(Mouse.getX()), Integer.valueOf(Mouse.getY())});
+                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d)", j1, k1, Mouse.getX(), Mouse.getY());
                         }
                     });
                     crashreportcategory.addCrashSectionCallable("Screen size", new Callable()
@@ -1411,7 +1394,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                         private static final String __OBFID = "CL_00000951";
                         public String call() throws Exception
                         {
-                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", new Object[] {Integer.valueOf(scaledresolution.getScaledWidth()), Integer.valueOf(scaledresolution.getScaledHeight()), Integer.valueOf(EntityRenderer.this.mc.displayWidth), Integer.valueOf(EntityRenderer.this.mc.displayHeight), Integer.valueOf(scaledresolution.getScaleFactor())});
+                            return String.format("Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d", scaledresolution.getScaledWidth(), scaledresolution.getScaledHeight(), Integer.valueOf(EntityRenderer.this.mc.displayWidth), Integer.valueOf(EntityRenderer.this.mc.displayHeight), Integer.valueOf(scaledresolution.getScaleFactor()));
                         }
                     });
                     throw new ReportedException(crashreport);
@@ -1707,14 +1690,14 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
             if (Reflector.ForgeHooksClient_setRenderPass.exists())
             {
-                Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, new Object[] {Integer.valueOf(0)});
+                Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, 0);
             }
 
             renderglobal.renderEntities(entity, frustum, partialTicks);
 
             if (Reflector.ForgeHooksClient_setRenderPass.exists())
             {
-                Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, new Object[] {Integer.valueOf(-1)});
+                Reflector.callVoid(Reflector.ForgeHooksClient_setRenderPass, -1);
             }
 
             RenderHelper.disableStandardItemLighting();
@@ -1729,7 +1712,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                 GlStateManager.disableAlpha();
                 this.mc.mcProfiler.endStartSection("outline");
 
-                if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[] {renderglobal, entityplayer, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI)
+                if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, renderglobal, entityplayer, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer.getHeldItem(), Float.valueOf(partialTicks))) && !this.mc.gameSettings.hideGUI)
                 {
                     renderglobal.drawSelectionBox(entityplayer, this.mc.objectMouseOver, 0, partialTicks);
                 }
@@ -1746,7 +1729,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
             GlStateManager.disableAlpha();
             this.mc.mcProfiler.endStartSection("outline");
 
-            if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, new Object[] {renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks)})) && !this.mc.gameSettings.hideGUI)
+            if ((!Reflector.ForgeHooksClient_onDrawBlockHighlight.exists() || !Reflector.callBoolean(Reflector.ForgeHooksClient_onDrawBlockHighlight, renderglobal, entityplayer1, this.mc.objectMouseOver, Integer.valueOf(0), entityplayer1.getHeldItem(), Float.valueOf(partialTicks))) && !this.mc.gameSettings.hideGUI)
             {
                 renderglobal.drawSelectionBox(entityplayer1, this.mc.objectMouseOver, 0, partialTicks);
             }

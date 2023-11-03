@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -60,6 +61,8 @@ public class RenderingUtils {
     }
 
     public static void drawImg(ResourceLocation loc, double posX, double posY, double width, double height) {
+        GL11.glEnable(GL_POLYGON_SMOOTH);
+        GL11.glEnable(GL_POINT_SMOOTH);
         GlStateManager.pushMatrix();
         GlStateManager.enableAlpha();
         GlStateManager.enableBlend();
@@ -76,9 +79,28 @@ public class RenderingUtils {
         worldrenderer.pos(posX, posY, 0.0D).tex(0.0F * f, 0.0F * f1).endVertex();
         tessellator.draw();
         GlStateManager.popMatrix();
+        GL11.glDisable(GL_POLYGON_SMOOTH);
+        GL11.glDisable(GL_POINT_SMOOTH);
     }
 
-    public static double progressiveAnimation( double now,  double desired,  double speed) {
+    public static void startSmooth() {
+        GL11.glEnable(2848);
+        GL11.glEnable(2881);
+        GL11.glEnable(2832);
+        GL11.glEnable(3042);
+        GL11.glBlendFunc(770, 771);
+        GL11.glHint(3154, 4354);
+        GL11.glHint(3155, 4354);
+        GL11.glHint(3153, 4354);
+    }
+
+    public static void endSmooth() {
+        GL11.glDisable(2848);
+        GL11.glDisable(2881);
+        GL11.glEnable(2832);
+    }
+
+    public static double progressiveAnimation(double now, double desired, double speed) {
         double dif = Math.abs(now - desired);
         int fps = Minecraft.getDebugFPS();
         if (dif > 0.0) {
@@ -96,11 +118,21 @@ public class RenderingUtils {
         return now;
     }
 
+    public static void drawFace(final int x, final int y, final ResourceLocation resourceLocation) {
+        GlStateManager.enableBlend();
+        Minecraft.getMinecraft().getTextureManager().bindTexture(resourceLocation);
+        GlStateManager.enableBlend();
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+        Gui.drawScaledCustomSizeModalRect(x, y, 8.0f, 8.0f, 8, 8, 31, 31, 64.0f, 64.0f);
+        GlStateManager.disableBlend();
+    }
+
     public static void scissorBox(int x, int y, int width, int height) {
-        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        int factor = sr.getScaleFactor();
-        glEnable(GL_SCISSOR_TEST);
-        glScissor(x * factor, (sr.getScaledHeight() - (y + height)) * factor, ((x + width) - x) * factor, ((y + height) - y) * factor);
+        ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
+        int factor = scaledResolution.getScaleFactor();
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor(x * factor, (scaledResolution.getScaledHeight() - (y + height)) * factor,
+                ((x + width) - x) * factor, ((y + height) - y) * factor);
     }
 
     public static void scissorBox(double x, double y, double width, double height) {
@@ -159,7 +191,7 @@ public class RenderingUtils {
                 StencilUtility.initStencilToWrite();
                 enableGL2D();
                 glColor(color);
-                Gui.drawRect(x, y, x1, y1, new Color(0,0,0,30).getRGB());
+                Gui.drawRect(x, y, x1, y1, new Color(0, 0, 0, 30).getRGB());
                 disableGL2D();
                 StencilUtility.readStencilBuffer(1);
                 BlurShader.renderBlur(6);

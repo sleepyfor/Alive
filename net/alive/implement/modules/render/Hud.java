@@ -59,12 +59,14 @@ public class Hud extends Module {
         var title = Client.INSTANCE.getClientName();
         switch (getMode("Mode")) {
             case "Alive":
-                Client.INSTANCE.getArial19().drawStringWithShadow(title, 3, 3, color);
-                Client.INSTANCE.getArial11().drawStringWithShadow(version, 24, 3, color);
+                Client.INSTANCE.getArial21().drawStringWithShadow(title, 3, 3, color);
+                Client.INSTANCE.getArial11().drawStringWithShadow(version, 26, 4, color);
                 //arial17.drawStringWithShadow(fps, 3, tabgui.getValueObject() ? 117 : 13, color);
                 break;
             case "Logo":
+                RenderingUtils.startSmooth();
                 RenderingUtils.drawImg(logo, 0, 2, 64, 64);
+                RenderingUtils.endSmooth();
                 //arial17.drawStringWithShadow(fps, 3, tabgui.getValueObject() ? 170 : 73, color);
                 break;
         }
@@ -73,7 +75,7 @@ public class Hud extends Module {
     private void drawTabgui() {
         switch (getMode("Mode")) {
             case "Alive":
-                Client.INSTANCE.getTabGui().draw(3, -6);
+                Client.INSTANCE.getTabGui().draw(3, -4);
                 break;
             case "Logo":
                 Client.INSTANCE.getTabGui().draw(3, 48);

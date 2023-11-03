@@ -30,12 +30,12 @@ import java.util.concurrent.*;
 public enum Client {
     INSTANCE;
 
-    private final String clientName = "Alive", clientVersion = "0.4.1", devVersion = "(Dev 1)";
+    private final String clientName = "Alive", clientVersion = "0.5.0", devVersion = "(Dev 1)";
     private final File DIR = new File(Minecraft.getMinecraft().mcDataDir, clientName);
+    private CustomFontRenderer arial21, arial19, arial17, arial15, arial11;
     private NotificationManager notificationManager;
-    private CustomFontRenderer arial19, arial17, arial15, arial11;
     private EventBus<? super IEvent> eventBus;
-    private final boolean isInDev = true;
+    private final boolean isInDev = false;
     private ModuleManager moduleManager;
     private FontManager fontManager;
     private boolean running = true;
@@ -48,6 +48,7 @@ public enum Client {
         startRPC();
         eventBus = new EventBus<>();
         fontManager = new FontManager();
+        arial21 = fontManager.createFont(21);
         arial19 = fontManager.createFont(19);
         arial17 = fontManager.createFont(17);
         arial15 = fontManager.createFont(15);
