@@ -34,9 +34,6 @@ public class Hud extends Module {
     public static Value<Double> red = new Value<>("Red", 168., 0, 255, 1);
     public static Value<Double> green = new Value<>("Green", 204., 0, 255, 1);
     public static Value<Double> blue = new Value<>("Blue", 255., 0, 255, 1);
-    CustomFontRenderer arial19 = Client.INSTANCE.getFontManager().createFont(19);
-    CustomFontRenderer arial17 = Client.INSTANCE.getFontManager().createFont(17);
-    CustomFontRenderer arial11 = Client.INSTANCE.getFontManager().createFont(11);
     public int offset;
 
     @Subscribe
@@ -62,8 +59,8 @@ public class Hud extends Module {
         var title = Client.INSTANCE.getClientName();
         switch (getMode("Mode")) {
             case "Alive":
-                arial19.drawStringWithShadow(title, 3, 3, color);
-                arial11.drawStringWithShadow(version, 24, 3, color);
+                Client.INSTANCE.getArial19().drawStringWithShadow(title, 3, 3, color);
+                Client.INSTANCE.getArial11().drawStringWithShadow(version, 24, 3, color);
                 //arial17.drawStringWithShadow(fps, 3, tabgui.getValueObject() ? 117 : 13, color);
                 break;
             case "Logo":
@@ -88,17 +85,17 @@ public class Hud extends Module {
         var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), blur ? 150 : 255).getRGB();
         var scaledWidth = event.getScaledResolution().getScaledWidth();
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
-        sortedModules.sort(Comparator.comparingDouble(mod -> -arial17.getWidth(mod.getDisplayName())));
+        sortedModules.sort(Comparator.comparingDouble(mod -> -Client.INSTANCE.getArial17().getWidth(mod.getDisplayName())));
         switch (getMode("Mode")) {
             case "Alive":
             case "Logo":
                 offset = 0;
                 for (Module module : sortedModules) {
-                    var moduleWidth = arial17.getWidth(module.getDisplayName());
+                    var moduleWidth = Client.INSTANCE.getArial17().getWidth(module.getDisplayName());
                     if (module.isEnabled()) {
                         module.animationX = (float) RenderingUtils.progressiveAnimation(module.animationX, scaledWidth - moduleWidth - 3, 1);
                         module.animationY = (float) RenderingUtils.progressiveAnimation(module.animationY, 10, 1);
-                        arial17.drawStringWithShadow(module.getDisplayName(), module.animationX, offset + 3, color);
+                        Client.INSTANCE.getArial17().drawStringWithShadow(module.getDisplayName(), module.animationX, offset + 3, color);
                     } else {
                         module.animationX = (float) RenderingUtils.progressiveAnimation(module.animationX, scaledWidth + moduleWidth, 1);
                         module.animationY = (float) RenderingUtils.progressiveAnimation(module.animationY, 0, 1);

@@ -34,8 +34,6 @@ import java.util.List;
 public class ClickGUI extends GuiScreen {
 
     public float x = 100, y = 50, width = 309, height = 350, anchorX, anchorY, scale;
-    CustomFontRenderer font15 = Client.INSTANCE.getFontManager().createFont(15);
-    CustomFontRenderer font17 = Client.INSTANCE.getFontManager().createFont(17);
     public List<CategoryButton> categories = new ArrayList<>();
     public List<Component> components = new ArrayList<>();
     public List<ModuleButton> modules = new ArrayList<>();
@@ -99,7 +97,7 @@ public class ClickGUI extends GuiScreen {
             RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, x - 1, y + 59, x + width + 9, y + 60, -1);
         Gui.drawRect(x + 110, y + 59, x + 111, y + height, color);
         if (settingsScreen)
-           font17.drawStringWithShadow("Settings for: \247F" + settingsModule.getName(), x + 112, y + height - 10,
+            Client.INSTANCE.getArial17().drawStringWithShadow("Settings for: \247F" + settingsModule.getName(), x + 112, y + height - 10,
                     new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
     }
 
@@ -139,7 +137,7 @@ public class ClickGUI extends GuiScreen {
 //                       -1);
             RenderingUtils.drawRectangle(moduleButton.x, moduleButton.y, moduleButton.x + moduleButton.width, moduleButton.y + moduleButton.height,
                     new Color(activeColor, activeColor, activeColor, blur ? 50 : 255).getRGB());
-            font17.drawCenteredStringWithShadow(moduleButton.module.getName() +
+            Client.INSTANCE.getArial17().drawCenteredStringWithShadow(moduleButton.module.getName() +
                     " [" + Keyboard.getKeyName(moduleButton.module.getKeybind()) + "]", moduleButton.x + moduleButton.width / 2, moduleButton.y + 10, enabledColor);
         }
     }
@@ -156,11 +154,11 @@ public class ClickGUI extends GuiScreen {
                 component.setHeight(13);
                 RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
                         new Color(20, 20, 20, blur ? 60 : 255).getRGB());
-                font15.drawStringWithShadow(((StringComponent) component).value.getValueName() + ":",
+                Client.INSTANCE.getArial15().drawStringWithShadow(((StringComponent) component).value.getValueName() + ":",
                         component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
                                 Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
-                font15.drawStringWithShadow(((StringComponent) component).value.getValueObject(),
-                        component.x + component.width - font15.getWidth(((StringComponent) component).value.getValueObject()) - 2, component.y + 4,
+                Client.INSTANCE.getArial15().drawStringWithShadow(((StringComponent) component).value.getValueObject(),
+                        component.x + component.width - Client.INSTANCE.getArial15().getWidth(((StringComponent) component).value.getValueObject()) - 2, component.y + 4,
                         new Color(255, 255, 255, blur ? 150 : 255).getRGB());
             }
             if (component instanceof BooleanComponent) {
@@ -171,10 +169,11 @@ public class ClickGUI extends GuiScreen {
                 var name = ((BooleanComponent) component).value.getValueObject() ? "Yes" : "No";
                 RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
                         new Color(20, 20, 20, blur ? 60 : 255).getRGB());
-                font15.drawStringWithShadow(((BooleanComponent) component).value.getValueName() + ":",
+                Client.INSTANCE.getArial15().drawStringWithShadow(((BooleanComponent) component).value.getValueName() + ":",
                         component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
                                 Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
-                font15.drawStringWithShadow(name, component.x + component.width - font15.getWidth(name) - 2, component.y + 4, new Color(255, 255, 255, blur ? 150 : 255).getRGB());
+                Client.INSTANCE.getArial15().drawStringWithShadow(name, component.x + component.width - Client.INSTANCE.getArial15().getWidth(name) - 2,
+                        component.y + 4, new Color(255, 255, 255, blur ? 150 : 255).getRGB());
             }
             if (component instanceof DoubleComponent) {
                 component.setX(x + 111);
@@ -197,10 +196,10 @@ public class ClickGUI extends GuiScreen {
                     val.setValueObject(min);
                 RenderingUtils.drawRectangle(component.x + 3, component.y, component.x + 110, component.y + component.height,
                         new Color(20, 20, 20, blur ? 60 : 255).getRGB());
-                font15.drawStringWithShadow(((DoubleComponent) component).value.getValueName() + ":",
+                Client.INSTANCE.getArial15().drawStringWithShadow(((DoubleComponent) component).value.getValueName() + ":",
                         component.x + 5, component.y + 4, new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(),
                                 Hud.blue.getValueObject().intValue(), blur ? 150 : 255).getRGB());
-                font15.drawStringWithShadow(valRounded, component.x + component.width - font15.getWidth(valRounded) - 2, component.y + 4,
+                Client.INSTANCE.getArial15().drawStringWithShadow(valRounded, component.x + component.width - Client.INSTANCE.getArial15().getWidth(valRounded) - 2, component.y + 4,
                         new Color(255, 255, 255, blur ? 150 : 255).getRGB());
                 RenderingUtils.drawRectangle(component.x + 6, component.y + 16, component.x + component.width - 3, component.y + 17,
                         new Color(255, 255, 255, blur ? 150 : 255).getRGB());

@@ -18,7 +18,6 @@ import net.minecraft.client.gui.ScaledResolution;
 
 @Getter @Setter
 public class Module {
-    CustomFontRenderer font17 = Client.INSTANCE.getFontManager().createFont(17);
     public List<Value> values = new ArrayList<>();
     public Minecraft mc = Minecraft.getMinecraft();
     private String name, displayName;
@@ -45,7 +44,7 @@ public class Module {
         Client.INSTANCE.getEventBus().register(this);
         ScaledResolution sr = new ScaledResolution(mc);
         animationY = 4;
-        animationX = sr.getScaledWidth() + font17.getWidth(getDisplayName());
+        animationX = sr.getScaledWidth() + Client.INSTANCE.getArial17().getWidth(getDisplayName());
         if (mc.theWorld != null)
             Client.INSTANCE.getNotificationManager().addNotification(new Notification(NotificationType.MODULE_ENABLED, name + " has been enabled!", 4000));
     }

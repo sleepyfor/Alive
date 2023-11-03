@@ -18,7 +18,6 @@ import java.awt.*;
 
 public class ModuleTab extends Tab {
 
-    public CustomFontRenderer font = Client.INSTANCE.getFontManager().createFont(17);
     public double off, modAnimation;
     @Setter
     public double x, y, initY;
@@ -43,7 +42,7 @@ public class ModuleTab extends Tab {
             Gui.drawRect(x, y, x + parent.off, y + height, new Color(10, 10, 10, 200).getRGB());
             GL11.glDisable(GL11.GL_SCISSOR_TEST);
         }
-        font.drawStringWithShadow(text, (float) (x + 3 + offset), (float) (y + 6), color);
+        Client.INSTANCE.getArial17().drawStringWithShadow(text, (float) (x + 3 + offset), (float) (y + 6), color);
         super.drawTab();
     }
 }

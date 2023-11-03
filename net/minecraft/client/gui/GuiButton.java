@@ -41,7 +41,6 @@ public class GuiButton extends Gui
     protected boolean hovered;
     public float animate;
     public int red, green, blue;
-    CustomFontRenderer font = Client.INSTANCE.getFontManager().createFont(17);
 
     public GuiButton(int buttonId, int x, int y, String buttonText)
     {
@@ -129,7 +128,7 @@ public class GuiButton extends Gui
             {
                 j = new Color(red, green, blue, 255).getRGB();
             }
-            font.drawCenteredStringWithShadow(displayString, this.xPosition + ((float) this.width / 2),
+            Client.INSTANCE.getArial17().drawCenteredStringWithShadow(displayString, this.xPosition + ((float) this.width / 2),
                     this.yPosition + (float) (this.height - 8) / 2, j);
         }
     }

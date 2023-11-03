@@ -12,7 +12,6 @@ import java.awt.*;
 import java.util.Collections;
 
 public class Notification {
-    CustomFontRenderer font = Client.INSTANCE.getFontManager().createFont(15);
     public TimeUtils timer = new TimeUtils(), remove = new TimeUtils();
     public float x, y, width, height, animation, animationY;
     public NotificationType type;
@@ -56,7 +55,7 @@ public class Notification {
             title = "Module Enabled!";
         if(type == NotificationType.MODULE_DISABLED)
             title = "Module Disabled!";
-        font.drawStringWithShadow(title, x - animation +3 , animationY + 3, type.color);
-        font.drawStringWithShadow(text, x - animation +3 , animationY + 12, -1);
+        Client.INSTANCE.getArial15().drawStringWithShadow(title, x - animation +3 , animationY + 3, type.color);
+        Client.INSTANCE.getArial15().drawStringWithShadow(text, x - animation +3 , animationY + 12, -1);
     }
 }
