@@ -9,13 +9,16 @@ import net.alive.api.module.Module;
 import net.alive.api.module.ModuleInfo;
 import net.alive.implement.modules.render.ClickGui;
 import net.alive.implement.modules.render.Hud;
+import net.alive.utils.gui.CustomFontRenderer;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.gui.Gui;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
 public class ModuleTab extends Tab {
 
+    public CustomFontRenderer font = Client.INSTANCE.getFontManager().createFont(17);
     public double off, modAnimation;
     @Setter
     public double x, y, initY;
@@ -35,9 +38,12 @@ public class ModuleTab extends Tab {
     public void drawTab() {
         this.y = initY + parent.anchorY - 68;
         off = RenderingUtils.progressiveAnimation(off, 2, 0.2);
-        if(parent.extended && !Hud.blur.getValueObject())
+        if(parent.extended && !Hud.blur.getValueObject()) {
+            RenderingUtils.scissorBox((int) x, (int) y, (int) ((int) x + parent.off), (int) ((int) y + height));
             Gui.drawRect(x, y, x + parent.off, y + height, new Color(10, 10, 10, 200).getRGB());
-        Client.INSTANCE.getFontManager().getArial17().drawStringWithShadow(text, (float) (x + 3 + offset), (float) (y + 6), color);
+            GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        }
+        font.drawStringWithShadow(text, (float) (x + 3 + offset), (float) (y + 6), color);
         super.drawTab();
     }
 }

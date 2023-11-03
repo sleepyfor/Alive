@@ -1,7 +1,9 @@
 package net.minecraft.client.gui;
 
+import lombok.var;
 import net.alive.Client;
 import net.alive.implement.modules.render.Hud;
+import net.alive.utils.gui.CustomFontRenderer;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -39,6 +41,7 @@ public class GuiButton extends Gui
     protected boolean hovered;
     public float animate;
     public int red, green, blue;
+    CustomFontRenderer font = Client.INSTANCE.getFontManager().createFont(17);
 
     public GuiButton(int buttonId, int x, int y, String buttonText)
     {
@@ -100,12 +103,12 @@ public class GuiButton extends Gui
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             GlStateManager.blendFunc(770, 771);
             if (hovered) {
-                animate = (float) RenderingUtils.progressiveAnimation(animate, xPosition + width, 10);
+                animate = (float) RenderingUtils.progressiveAnimation(animate, xPosition + width, 0.6);
                 red = (int) RenderingUtils.progressiveAnimation(red, Hud.red.getValueObject().intValue(), 5);
                 green = (int) RenderingUtils.progressiveAnimation(red, Hud.green.getValueObject().intValue(), 5);
                 blue = (int) RenderingUtils.progressiveAnimation(red, Hud.blue.getValueObject().intValue(), 5);
             }else {
-                animate = (float) RenderingUtils.progressiveAnimation(animate, xPosition, 2.5);
+                animate = (float) RenderingUtils.progressiveAnimation(animate, xPosition, 0.6);
                 red = (int) RenderingUtils.progressiveAnimation(red, 255, 0.6);
                 green = (int) RenderingUtils.progressiveAnimation(red, 255, 0.6);
                 blue = (int) RenderingUtils.progressiveAnimation(red, 255, 0.6);
@@ -126,9 +129,8 @@ public class GuiButton extends Gui
             {
                 j = new Color(red, green, blue, 255).getRGB();
             }
-            Client.INSTANCE.getFontManager().getArial17().drawCenteredStringWithShadow(displayString, this.xPosition + ((float) this.width / 2),
+            font.drawCenteredStringWithShadow(displayString, this.xPosition + ((float) this.width / 2),
                     this.yPosition + (float) (this.height - 8) / 2, j);
-            //this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, j);
         }
     }
 

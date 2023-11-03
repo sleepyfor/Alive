@@ -6,6 +6,7 @@ import net.alive.api.event.IEvent;
 import net.alive.api.file.Config;
 import net.alive.api.gui.click.ClickGUI;
 import net.alive.api.gui.tab.TabGui;
+import net.alive.api.notification.NotificationManager;
 import net.alive.implement.modules.movement.Sprint;
 import net.alive.implement.modules.render.Hud;
 import net.alive.manager.font.FontManager;
@@ -27,6 +28,7 @@ public enum Client {
 
     private final String clientName = "Alive", clientVersion = "0.4.1", devVersion = "(Dev 1)";
     private final File DIR = new File(Minecraft.getMinecraft().mcDataDir, clientName);
+    private NotificationManager notificationManager;
     private EventBus<? super IEvent> eventBus;
     private final boolean isInDev = true;
     private ModuleManager moduleManager;
@@ -40,11 +42,9 @@ public enum Client {
     public void initClient() {
         startRPC();
         eventBus = new EventBus<>();
-        try {
-            fontManager = new FontManager();
-        } catch (IOException | FontFormatException ignored) {
-        }
+        fontManager = new FontManager();
         clickGUI = new ClickGUI();
+        notificationManager = new NotificationManager();
         tabGui = new TabGui();
         moduleManager = new ModuleManager();
         moduleManager.getModule(Hud.class).setState(true);
@@ -53,20 +53,12 @@ public enum Client {
         clickGUI.initClickGUI();
         config = new Config();
         config.createDirectory();
-        try {
-            config.loadConfig();
-        } catch (IOException ignored) {
-        }
+        config.loadConfig();
     }
 
     private void startRPC(){
         started = System.currentTimeMillis();
-        DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler(new ReadyCallback() {
-            @Override
-            public void apply(DiscordUser discordUser) {
-                updateRPC("Loading Alive...", "");
-            }
-        }).build();
+        DiscordEventHandlers handlers = new DiscordEventHandlers.Builder().setReadyEventHandler(discordUser -> updateRPC("Loading Alive...", "")).build();
 
         DiscordRPC.discordInitialize("1162528311709270036", handlers, true);
 

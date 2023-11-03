@@ -9,7 +9,7 @@ import net.alive.utils.gui.CustomFontRenderer;
 @Getter
 @Setter
 public class Component {
-    public CustomFontRenderer font = Client.INSTANCE.getFontManager().getArial17();
+    public CustomFontRenderer font = Client.INSTANCE.getFontManager().createFont(17);
     public float x, y, width, height;
     public ClickGUI parent;
 

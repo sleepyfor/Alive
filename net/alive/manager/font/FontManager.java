@@ -10,14 +10,15 @@ import java.util.Objects;
 
 @Getter
 public class FontManager {
-
-    public CustomFontRenderer arial17, arial15;
-
-    public FontManager() throws IOException, FontFormatException {
+    public CustomFontRenderer createFont(int size) {
         var fileLocation = "fonts/arial.ttf";
-        arial17 = new CustomFontRenderer(Font.createFont(0, Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResourceAsStream(fileLocation)))
-                .deriveFont(0, 17f));
-        arial15 = new CustomFontRenderer(Font.createFont(0, Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResourceAsStream(fileLocation)))
-                .deriveFont(0, 15f));
+        CustomFontRenderer font = null;
+        try {
+            font = new CustomFontRenderer(Font.createFont(0, Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResourceAsStream(fileLocation)))
+                    .deriveFont(Font.PLAIN, size));
+        } catch (IOException | FontFormatException error) {
+            error.printStackTrace();
+        }
+        return font;
     }
 }

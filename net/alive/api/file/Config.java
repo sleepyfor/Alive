@@ -43,37 +43,41 @@ public class Config {
         printWriter.close();
     }
 
-    public void loadConfig() throws IOException {
+    public void loadConfig() {
         File configFile = new File(Client.INSTANCE.getDIR(), "Configuration.json");
-        if (!configFile.exists()) {
-            configFile.createNewFile();
-            saveConfig();
-        }
-        BufferedReader reader = new BufferedReader(new FileReader(configFile));
-        JsonElement json = gson.fromJson(reader, JsonElement.class);
-        if (json instanceof JsonNull)
-            return;
-        JsonObject object = (JsonObject) json;
-        for (Module module : Client.INSTANCE.getModuleManager().getModuleList().values()) {
-            if (!object.has(module.getName()))
-                continue;
-            JsonElement modules = object.get(module.getName());
-            if (modules instanceof JsonNull)
-                return;
-            JsonObject moduleObject = (JsonObject) modules;
-            if (moduleObject.has("Enabled")) module.setState(moduleObject.get("Enabled").getAsBoolean());
-            if (moduleObject.has("Keybind")) module.setKeybind(moduleObject.get("Keybind").getAsInt());
-            for (Value value : module.getValues()) {
-                if (!moduleObject.has(value.getValueName())) continue;
-                if (value.getValueObject() instanceof Boolean)
-                    value.setValueObject(moduleObject.get(value.getValueName()).getAsBoolean());
-                if (value.getValueObject() instanceof String)
-                    value.setValueObject(moduleObject.get(value.getValueName()).getAsString());
-                if (value.getValueObject() instanceof Double)
-                    value.setValueObject(moduleObject.get(value.getValueName()).getAsDouble());
-                if (value.getValueObject() instanceof Integer)
-                    value.setValueObject(moduleObject.get(value.getValueName()).getAsInt());
+        try {
+            if (!configFile.exists()) {
+                configFile.createNewFile();
+                saveConfig();
             }
+            BufferedReader reader = new BufferedReader(new FileReader(configFile));
+            JsonElement json = gson.fromJson(reader, JsonElement.class);
+            if (json instanceof JsonNull)
+                return;
+            JsonObject object = (JsonObject) json;
+            for (Module module : Client.INSTANCE.getModuleManager().getModuleList().values()) {
+                if (!object.has(module.getName()))
+                    continue;
+                JsonElement modules = object.get(module.getName());
+                if (modules instanceof JsonNull)
+                    return;
+                JsonObject moduleObject = (JsonObject) modules;
+                if (moduleObject.has("Enabled")) module.setState(moduleObject.get("Enabled").getAsBoolean());
+                if (moduleObject.has("Keybind")) module.setKeybind(moduleObject.get("Keybind").getAsInt());
+                for (Value value : module.getValues()) {
+                    if (!moduleObject.has(value.getValueName())) continue;
+                    if (value.getValueObject() instanceof Boolean)
+                        value.setValueObject(moduleObject.get(value.getValueName()).getAsBoolean());
+                    if (value.getValueObject() instanceof String)
+                        value.setValueObject(moduleObject.get(value.getValueName()).getAsString());
+                    if (value.getValueObject() instanceof Double)
+                        value.setValueObject(moduleObject.get(value.getValueName()).getAsDouble());
+                    if (value.getValueObject() instanceof Integer)
+                        value.setValueObject(moduleObject.get(value.getValueName()).getAsInt());
+                }
+            }
+        } catch (IOException error) {
+            error.printStackTrace();
         }
     }
 }

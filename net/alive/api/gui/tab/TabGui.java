@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.IChatComponent;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -42,8 +43,11 @@ public class TabGui {
                 off = RenderingUtils.progressiveAnimation(off, 70, 0.8);
         if (Hud.blur.getValueObject()) {
             RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX(), anchorY + 10, getX() + 60, getY() + 20, new Color(10, 10, 10, 200).getRGB());
-            if (extended)
+            if (extended) {
+                RenderingUtils.scissorBox(getX() + 62, anchorY + 10, getX() + 62 + off, anchorY + (modules.size() * 20) + 9);
                 RenderingUtils.drawBlurredRect(RenderingUtils.BlurType.NORMAL, getX() + 62, anchorY + 10, getX() + 62 + off, anchorY + (modules.size() * 20) + 9, new Color(10, 10, 10, 200).getRGB());
+                GL11.glDisable(GL11.GL_SCISSOR_TEST);
+            }
         }
         for (CategoryTab categoryTab : categories) {
             i += categoryTab.height;
@@ -64,10 +68,11 @@ public class TabGui {
             }
             for (ModuleTab moduleTab : modules) {
                 if (selection == moduleTab.module) {
-                    moduleTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(), 255).getRGB();
+                    moduleTab.color = new Color(Hud.red.getValueObject().intValue(), Hud.green.getValueObject().intValue(), Hud.blue.getValueObject().intValue(),
+                            Hud.blur.getValueObject() ? 150 : 255).getRGB();
                     moduleTab.offset = RenderingUtils.progressiveAnimation(moduleTab.offset, 2, 0.002);
                 } else {
-                    moduleTab.color = -1;
+                    moduleTab.color = new Color(255, 255, 255, Hud.blur.getValueObject() ? 150 : 255).getRGB();
                     moduleTab.offset = RenderingUtils.progressiveAnimation(moduleTab.offset, 0, 0.002);
                 }
             }

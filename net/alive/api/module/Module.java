@@ -2,8 +2,12 @@ package net.alive.api.module;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.var;
 import net.alive.Client;
+import net.alive.api.notification.Notification;
+import net.alive.api.notification.NotificationType;
 import net.alive.api.value.Value;
+import net.alive.utils.gui.CustomFontRenderer;
 import net.minecraft.client.Minecraft;
 
 import java.lang.reflect.Field;
@@ -14,6 +18,7 @@ import net.minecraft.client.gui.ScaledResolution;
 
 @Getter @Setter
 public class Module {
+    CustomFontRenderer font17 = Client.INSTANCE.getFontManager().createFont(17);
     public List<Value> values = new ArrayList<>();
     public Minecraft mc = Minecraft.getMinecraft();
     private String name, displayName;
@@ -40,12 +45,16 @@ public class Module {
         Client.INSTANCE.getEventBus().register(this);
         ScaledResolution sr = new ScaledResolution(mc);
         animationY = 4;
-        animationX = sr.getScaledWidth() + Client.INSTANCE.getFontManager().getArial17().getWidth(getDisplayName());
+        animationX = sr.getScaledWidth() + font17.getWidth(getDisplayName());
+        if (mc.theWorld != null)
+            Client.INSTANCE.getNotificationManager().addNotification(new Notification(NotificationType.MODULE_ENABLED, name + " has been enabled!", 4000));
     }
 
     public void onDisable() {
         Client.INSTANCE.getEventBus().unregister(this);
         mc.timer.timerSpeed = 1.0f;
+        if (mc.theWorld != null)
+            Client.INSTANCE.getNotificationManager().addNotification(new Notification(NotificationType.MODULE_DISABLED, name + " has been disabled!", 4000));
     }
 
     public List<Value> getValues() {

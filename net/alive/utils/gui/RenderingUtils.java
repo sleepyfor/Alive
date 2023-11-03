@@ -100,7 +100,14 @@ public class RenderingUtils {
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
         int factor = sr.getScaleFactor();
         glEnable(GL_SCISSOR_TEST);
-        glScissor(x, y, x + width,  y + height);
+        glScissor(x * factor, (sr.getScaledHeight() - (y + height)) * factor, ((x + width) - x) * factor, ((y + height) - y) * factor);
+    }
+
+    public static void scissorBox(double x, double y, double width, double height) {
+        ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+        int factor = sr.getScaleFactor();
+        glEnable(GL_SCISSOR_TEST);
+        glScissor((int) (x * factor), (int) ((sr.getScaledHeight() - (y + height)) * factor), (int) (((x + width) - x) * factor), (int) (((y + height) - y) * factor));
     }
 
     public static void scale(float x, float y, float scale) {
