@@ -25,11 +25,11 @@ import java.util.List;
 @ModuleInfo(name = "Hud", displayName = "Hud", keyBind = 0, category = Category.RENDER)
 public class Hud extends Module {
     public Value<String> mode = new Value<>("Mode", "Alive", "Alive", "Logo");
-    public Value<Boolean> arraylist = new Value<>("Arraylist", true);
-    public Value<Boolean> watermark = new Value<>("Watermark", true);
-    public static Value<Boolean> suffix = new Value<>("Suffix", true);
-    public Value<Boolean> tabgui = new Value<>("TabGUI", true);
     public Value<Boolean> notifications = new Value<>("Notifications", true);
+    public Value<Boolean> watermark = new Value<>("Watermark", true);
+    public Value<Boolean> arraylist = new Value<>("Arraylist", true);
+    public Value<Boolean> tabgui = new Value<>("TabGUI", true);
+    public static Value<Boolean> suffix = new Value<>("Suffix", true);
     public static Value<Boolean> blur = new Value<>("Blur", true);
     public static Value<Double> red = new Value<>("Red", 168., 0, 255, 1);
     public static Value<Double> green = new Value<>("Green", 204., 0, 255, 1);

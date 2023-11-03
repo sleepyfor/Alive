@@ -85,7 +85,7 @@ public class ChestStealer extends Module {
     }
 
     public boolean potions(Item item){
-        return pickaxes.getValueObject() && item instanceof ItemPotion;
+        return potions.getValueObject() && item instanceof ItemPotion;
     }
 
     public boolean blocks(Item item){
