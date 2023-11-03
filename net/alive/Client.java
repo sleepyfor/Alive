@@ -22,6 +22,9 @@ import net.minecraft.client.Minecraft;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.*;
 
 @Getter
 public enum Client {
