@@ -791,4 +791,8 @@ public class EntityPlayerSP extends AbstractClientPlayer {
             this.sendPlayerAbilities();
         }
     }
+
+    public boolean isMoving(){
+        return mc.thePlayer.moveForward != 0 || mc.thePlayer.moveStrafing != 0;
+    }
 }

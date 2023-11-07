@@ -14,9 +14,12 @@ import net.alive.implement.events.render.Render2DEvent;
 import net.alive.utils.gui.CustomFontRenderer;
 import net.alive.utils.gui.RenderingUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.*;
@@ -39,10 +42,10 @@ public class Hud extends Module {
     @Subscribe
     public Listener<Render2DEvent> renderHud = new Listener<>(event -> {
         setSuffix((String) getValue("Mode").getValueObject());
-        if (watermark.getValueObject()) drawWatermark(blur.getValueObject(), event);
         if (tabgui.getValueObject()) drawTabgui();
         if (notifications.getValueObject()) Client.INSTANCE.getNotificationManager().drawNotifications();
         if (arraylist.getValueObject()) drawArraylist(blur.getValueObject(), event);
+        if (watermark.getValueObject()) drawWatermark(blur.getValueObject(), event);
     });
 
     @Subscribe
@@ -64,9 +67,14 @@ public class Hud extends Module {
                 //arial17.drawStringWithShadow(fps, 3, tabgui.getValueObject() ? 117 : 13, color);
                 break;
             case "Logo":
-                RenderingUtils.startSmooth();
+//                Gui.drawRect(0,0,0,0,0);
+//                RenderingUtils.startSmooth();
+//                GL11.glPushMatrix();
+//                GlStateManager.disableLighting();
                 RenderingUtils.drawImg(logo, 0, 2, 64, 64);
-                RenderingUtils.endSmooth();
+//                GlStateManager.enableLighting();
+//                GL11.glPopMatrix();
+//                RenderingUtils.endSmooth();
                 //arial17.drawStringWithShadow(fps, 3, tabgui.getValueObject() ? 170 : 73, color);
                 break;
         }

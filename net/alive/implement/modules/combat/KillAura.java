@@ -1,5 +1,6 @@
 package net.alive.implement.modules.combat;
 
+import lombok.var;
 import net.alive.api.event.annotation.Subscribe;
 import net.alive.api.event.listener.impl.Listener;
 import net.alive.api.event.state.EventState;
@@ -9,10 +10,12 @@ import net.alive.api.module.ModuleInfo;
 import net.alive.api.value.Value;
 import net.alive.implement.events.player.PlayerUpdateEvent;
 import net.alive.utils.combat.CombatUtils;
+import net.alive.utils.player.PlayerUtils;
 import net.alive.utils.world.TimeUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C02PacketUseEntity;
+import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C07PacketPlayerDigging;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -49,10 +52,41 @@ public class KillAura extends Module {
                 break;
         }
         if (target != null) {
+            var rots = PlayerUtils.getRotations(target);
+//            mc.thePlayer.rotationYaw = rots[0];
+//            mc.thePlayer.rotationPitch = rots[1];
+            event.setYaw(rots[0]);
+            event.setPitch(rots[1]);
             if (event.getState() == EventState.PRE) {
                 if (timer.time((float) (1000 / speed.getValueObject()))) {
                     if (blockhit.getValueObject() && (mc.thePlayer.isUsingItem() && mc.thePlayer.getCurrentEquippedItem().getItem() instanceof ItemSword))
                         mc.thePlayer.sendQueue.addToSendQueue(new C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN));
+//                    event.setY(event.getY() + 0.003234);
+//                    event.setY(event.getY() + 0.001234);
+//                    event.setY(event.getY() + 0.0001234);
+//                    event.setY(event.getY() + 0.001234);
+//                    event.setY(event.getY() + 0.0001234);
+//                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0020145,
+//                            mc.thePlayer.posZ, false));
+//                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.0010145, mc.thePlayer.posZ, true));
+//                    mc.thePlayer.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.00010145,
+//                            mc.thePlayer.posZ, false));
+                    double x = mc.thePlayer.posX;
+                    double y = mc.thePlayer.posY;
+                    double z = mc.thePlayer.posZ;
+//                    mc.thePlayer.sendQueue
+//                            .addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.11, z, false));
+//                    mc.thePlayer.sendQueue
+//                            .addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.11021421, z, false));
+//                    mc.thePlayer.sendQueue
+//                            .addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(x, y + 0.000000000011, z, false));
+//                    if (mc.thePlayer.isCollidedVertically && mc.thePlayer.onGround) {
+                        event.setGround(false);
+//                        event.setY(event.getY() + 0.069);
+//                    }
+//                    event.setY(event.getY() + 0.011021421);
+//                    event.setY(event.getY() + 0.000000000011);
+//                    event.setGround(true);
                     mc.thePlayer.swingItem();
                     mc.thePlayer.sendQueue.addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
                     timer.reset();

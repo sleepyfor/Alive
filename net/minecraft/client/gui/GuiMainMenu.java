@@ -80,7 +80,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback {
         RenderingUtils.drawImg(new ResourceLocation("images/horizon.jpg"), -100, -100, width + 200, height + 200);
         RenderingUtils.drawImg(new ResourceLocation("icons/logo3.png"), (double) width / 2 - 50, 75,
                 100, 100);
-        Client.INSTANCE.getArial17().drawStringWithShadow("Alive v" + Client.INSTANCE.getClientVersion() + " by sleepyfor!", 2, scaledResolution.getScaledHeight() - 10, -1);
+        Client.INSTANCE.getArial17().drawStringWithShadow("Alive v" + Client.INSTANCE.getClientVersion() + " by sleepyfor! (Logged into: \2473" + mc.session.getUsername() + "\247f)",
+                2, scaledResolution.getScaledHeight() - 10, -1);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }
