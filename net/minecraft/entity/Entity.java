@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
+
+import net.alive.Client;
+import net.alive.implement.events.player.SafewalkEvent;
+import net.alive.implement.modules.world.Bridge;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -613,7 +617,9 @@ public abstract class Entity implements ICommandSender
             double d3 = x;
             double d4 = y;
             double d5 = z;
-            boolean flag = this.onGround && this.isSneaking() && this instanceof EntityPlayer;
+            SafewalkEvent safewalkEvent = new SafewalkEvent();
+            Client.INSTANCE.getEventBus().call(safewalkEvent);
+            boolean flag = this.onGround && (/*Client.INSTANCE.getModuleManager().getModule(Bridge.class).isEnabled() || */isSneaking()) && this instanceof EntityPlayer;
 
             if (flag)
             {

@@ -6,10 +6,13 @@ import net.alive.api.module.Module;
 import net.alive.implement.modules.combat.AntiKnockback;
 import net.alive.implement.modules.combat.KillAura;
 import net.alive.implement.modules.movement.*;
+import net.alive.implement.modules.player.FastPlace;
+import net.alive.implement.modules.player.FastUse;
 import net.alive.implement.modules.player.NoFall;
 import net.alive.implement.modules.player.TimerModifier;
 import net.alive.implement.modules.render.ClickGui;
 import net.alive.implement.modules.render.Hud;
+import net.alive.implement.modules.world.Bridge;
 import net.alive.implement.modules.world.ChestStealer;
 
 import java.util.ArrayList;
@@ -48,10 +51,13 @@ public class ModuleManager {
 
     public void registerWorld() {
         registerModule(new ChestStealer());
+        registerModule(new Bridge());
     }
 
     public void registerPlayer() {
         registerModule(new TimerModifier());
+        registerModule(new FastPlace());
+        registerModule(new FastUse());
         registerModule(new NoFall());
     }
 
