@@ -18,6 +18,8 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -41,11 +43,23 @@ public class Hud extends Module {
 
     @Subscribe
     public Listener<Render2DEvent> renderHud = new Listener<>(event -> {
+        var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), blur.getValueObject() ? 150 : 255).getRGB();
         setSuffix((String) getValue("Mode").getValueObject());
         if (tabgui.getValueObject()) drawTabgui();
         if (notifications.getValueObject()) Client.INSTANCE.getNotificationManager().drawNotifications();
         if (arraylist.getValueObject()) drawArraylist(blur.getValueObject(), event);
         if (watermark.getValueObject()) drawWatermark(blur.getValueObject(), event);
+        if (mc.currentScreen instanceof GuiChat) {
+            Client.INSTANCE.getArial17().drawStringWithShadow("FPS: " + Minecraft.getDebugFPS() + " X: " + mc.thePlayer.getPosition().getX() + " Y: " +
+                            mc.thePlayer.getPosition().getY() + " Z: " + mc.thePlayer.getPosition().getZ(), 2, event.getScaledResolution().getScaledHeight() -
+                    Client.INSTANCE.getArial17().FONT_HEIGHT - 16, color);
+        } else {
+            Client.INSTANCE.getArial17().drawStringWithShadow("FPS: " + Minecraft.getDebugFPS(), 2, event.getScaledResolution().getScaledHeight() -
+                    Client.INSTANCE.getArial17().FONT_HEIGHT - 12, color);
+            Client.INSTANCE.getArial17().drawStringWithShadow("X: " +
+                    mc.thePlayer.getPosition().getX() + " Y: " + mc.thePlayer.getPosition().getY() + " Z: " +
+                    mc.thePlayer.getPosition().getZ(), 2, event.getScaledResolution().getScaledHeight() - Client.INSTANCE.getArial17().FONT_HEIGHT - 2, color);
+        }
     });
 
     @Subscribe
@@ -64,18 +78,9 @@ public class Hud extends Module {
             case "Alive":
                 Client.INSTANCE.getArial21().drawStringWithShadow(title, 3, 3, color);
                 Client.INSTANCE.getArial11().drawStringWithShadow(version, 26, 4, color);
-                //arial17.drawStringWithShadow(fps, 3, tabgui.getValueObject() ? 117 : 13, color);
                 break;
             case "Logo":
-//                Gui.drawRect(0,0,0,0,0);
-//                RenderingUtils.startSmooth();
-//                GL11.glPushMatrix();
-//                GlStateManager.disableLighting();
                 RenderingUtils.drawImg(logo, 0, 2, 64, 64);
-//                GlStateManager.enableLighting();
-//                GL11.glPopMatrix();
-//                RenderingUtils.endSmooth();
-                //arial17.drawStringWithShadow(fps, 3, tabgui.getValueObject() ? 170 : 73, color);
                 break;
         }
     }
@@ -92,7 +97,9 @@ public class Hud extends Module {
     }
 
     private void drawArraylist(boolean blur, Render2DEvent event) {
-        var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), blur ? 150 : 255).getRGB();
+//        var color = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), blur ? 150 : 255).getRGB();
+        var clientColor = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), blur ? 150 : 255).brighter();
+        var clientColor2 = new Color(red.getValueObject().intValue(), green.getValueObject().intValue(), blue.getValueObject().intValue(), blur ? 150 : 255);
         var scaledWidth = event.getScaledResolution().getScaledWidth();
         List<Module> sortedModules = new ArrayList<>(Client.INSTANCE.getModuleManager().getModuleList().values());
         sortedModules.sort(Comparator.comparingDouble(mod -> -Client.INSTANCE.getArial17().getWidth(mod.getDisplayName())));
@@ -101,11 +108,18 @@ public class Hud extends Module {
             case "Logo":
                 offset = 0;
                 for (Module module : sortedModules) {
+                    var color = RenderingUtils.getGradientOffset(clientColor, clientColor2,
+                            (Math.abs(((System.currentTimeMillis()) / 8)) / 100D) + (offset /
+                                    (( Client.INSTANCE.getArial17().getHeight(module.getDisplayName()) - 123)))).getRGB();
                     var moduleWidth = Client.INSTANCE.getArial17().getWidth(module.getDisplayName());
                     if (module.isEnabled()) {
                         module.animationX = (float) RenderingUtils.progressiveAnimation(module.animationX, scaledWidth - moduleWidth - 3, 1);
                         module.animationY = (float) RenderingUtils.progressiveAnimation(module.animationY, 10, 1);
-                        Client.INSTANCE.getArial17().drawStringWithShadow(module.getDisplayName(), module.animationX, offset + 3, color);
+                        RenderingUtils.drawRectangle(module.animationX - 3, offset + 3, module.animationX +
+                                        Client.INSTANCE.getArial17().getWidth(module.getDisplayName()) + 1, offset + 13, new Color(5, 5, 5, 100).getRGB());
+                        RenderingUtils.drawRectangle(module.animationX + Client.INSTANCE.getArial17().getWidth(module.getDisplayName()), offset + 3,
+                                module.animationX + Client.INSTANCE.getArial17().getWidth(module.getDisplayName()) + 1, offset + 13, color);
+                        Client.INSTANCE.getArial17().drawStringWithShadow(module.getDisplayName(), module.animationX - 2, offset + 4.5f, color);
                     } else {
                         module.animationX = (float) RenderingUtils.progressiveAnimation(module.animationX, scaledWidth + moduleWidth, 1);
                         module.animationY = (float) RenderingUtils.progressiveAnimation(module.animationY, 0, 1);

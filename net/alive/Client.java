@@ -30,7 +30,7 @@ import java.util.concurrent.*;
 public enum Client {
     INSTANCE;
 
-    private final String clientName = "Alive", clientVersion = "0.5.0", devVersion = "(Dev 1)";
+    private final String clientName = "Alive", clientVersion = "0.8.5", devVersion = "(Dev 1)";
     private final File DIR = new File(Minecraft.getMinecraft().mcDataDir, clientName);
     private CustomFontRenderer arial21, arial19, arial17, arial15, arial11;
     private NotificationManager notificationManager;
