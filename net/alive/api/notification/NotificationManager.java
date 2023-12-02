@@ -22,8 +22,6 @@ public class NotificationManager {
     public void drawNotifications(){
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
         float y = 0;
-//        List<Notification> sortedNotifications = new ArrayList<>(notifications);
-//        notifications.sort(Comparator.comparingDouble(not -> not.duration));
         for(int i = 0; i > -notifications.size(); i--){
             var notification = notifications.get(-i);
             notification.drawNotification(sr.getScaledWidth(), y + sr.getScaledHeight() - 60);

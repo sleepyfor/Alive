@@ -5,6 +5,7 @@ import net.alive.api.event.EventBus;
 import net.alive.api.event.IEvent;
 import net.alive.api.file.Config;
 import net.alive.api.gui.click.ClickGUI;
+import net.alive.api.gui.flushgui.FlushGUI;
 import net.alive.api.gui.tab.TabGui;
 import net.alive.api.notification.NotificationManager;
 import net.alive.implement.modules.movement.Sprint;
@@ -30,7 +31,7 @@ import java.util.concurrent.*;
 public enum Client {
     INSTANCE;
 
-    private final String clientName = "Alive", clientVersion = "0.8.5", devVersion = "(Dev 1)";
+    private final String clientName = "Alive", clientVersion = "0.9.0", devVersion = "(Dev 1)";
     private final File DIR = new File(Minecraft.getMinecraft().mcDataDir, clientName);
     private CustomFontRenderer arial21, arial19, arial17, arial15, arial11;
     private NotificationManager notificationManager;
@@ -39,6 +40,7 @@ public enum Client {
     private ModuleManager moduleManager;
     private FontManager fontManager;
     private boolean running = true;
+    private FlushGUI flushGUI;
     private ClickGUI clickGUI;
     private Config config;
     private TabGui tabGui;
@@ -54,11 +56,13 @@ public enum Client {
         arial15 = fontManager.createFont(15);
         arial11 = fontManager.createFont(11);
         clickGUI = new ClickGUI();
+        flushGUI = new FlushGUI();
         notificationManager = new NotificationManager();
         tabGui = new TabGui();
         moduleManager = new ModuleManager();
         tabGui.initMate();
         clickGUI.initClickGUI();
+        flushGUI.initializeGui();
         config = new Config();
         config.createDirectory();
         config.loadConfig();

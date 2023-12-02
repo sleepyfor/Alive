@@ -7,6 +7,7 @@ import net.alive.Client;
 import net.alive.api.notification.Notification;
 import net.alive.api.notification.NotificationType;
 import net.alive.api.value.Value;
+import net.alive.implement.modules.render.ClickGui;
 import net.alive.utils.gui.CustomFontRenderer;
 import net.minecraft.client.Minecraft;
 
@@ -46,14 +47,15 @@ public class Module {
         animationY = 4;
         animationX = sr.getScaledWidth() + Client.INSTANCE.getArial17().getWidth(getDisplayName());
         if (mc.theWorld != null)
-            Client.INSTANCE.getNotificationManager().addNotification(new Notification(NotificationType.MODULE_ENABLED, name + " has been enabled!", 4000));
+            if (!(this instanceof ClickGui))
+                Client.INSTANCE.getNotificationManager().addNotification(new Notification(NotificationType.MODULE_ENABLED, "Module Enabled", name + " has been enabled!", 3000));
     }
 
     public void onDisable() {
         Client.INSTANCE.getEventBus().unregister(this);
         mc.timer.timerSpeed = 1.0f;
-        if (mc.theWorld != null)
-            Client.INSTANCE.getNotificationManager().addNotification(new Notification(NotificationType.MODULE_DISABLED, name + " has been disabled!", 4000));
+        if (mc.theWorld != null && !(this instanceof ClickGui))
+            Client.INSTANCE.getNotificationManager().addNotification(new Notification(NotificationType.MODULE_DISABLED, "Module Disabled!", name + " has been disabled!", 3000));
     }
 
     public List<Value> getValues() {

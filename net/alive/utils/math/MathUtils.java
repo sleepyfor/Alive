@@ -2,6 +2,7 @@ package net.alive.utils.math;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 public class MathUtils {
 
@@ -26,5 +27,12 @@ public class MathUtils {
             return new BigDecimal(floored, MathContext.DECIMAL64)
                     .stripTrailingZeros()
                     .doubleValue();
+    }
+
+    public static double round(double num, double increment) {
+        double v = (double) Math.round(num / increment) * increment;
+        BigDecimal bd = new BigDecimal(v);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
+        return bd.floatValue();
     }
 }

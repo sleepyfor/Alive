@@ -26,6 +26,7 @@ import java.util.ArrayList;
 @ModuleInfo(name = "Kill Aura", keyBind = Keyboard.KEY_R, category = Category.COMBAT)
 public class KillAura extends Module {
 
+    public Value<ArrayList<String>> mode = new Value<>("Mode", "Basic", "Sorted", "Basic");
     public Value<Boolean> players = new Value<>("Players", true);
     public Value<Boolean> monsters = new Value<>("Monsters", false);
     public Value<Boolean> animals = new Value<>("Animals", false);
@@ -34,7 +35,6 @@ public class KillAura extends Module {
     public Value<Boolean> blockhit = new Value<>("Block Hit", true);
     public Value<Double> speed = new Value<>("Attack Speed", 14., 1, 20, 1);
     public Value<Double> range = new Value<>("Range", 4., 2.5, 7., .1);
-    public Value<ArrayList<String>> mode = new Value<>("Mode", "Sorted", "Sorted", "Basic");
     public TimeUtils timer = new TimeUtils();
     public EntityLivingBase target;
 

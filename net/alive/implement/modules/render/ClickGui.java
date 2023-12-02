@@ -14,7 +14,7 @@ public class ClickGui extends Module {
 
     @Override
     public void onEnable() {
-        mc.displayGuiScreen(Client.INSTANCE.getClickGUI());
+        mc.displayGuiScreen(Client.INSTANCE.getFlushGUI());
         toggle();
         super.onEnable();
     }
