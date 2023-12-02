@@ -13,7 +13,9 @@ Alive is for Minecraft 1.8.8
 1) git clone https://github.com/JustMeDark/Alive
 2) Open the folder in intellij
 3) There, now build it yourself dont be lazy
+<pre>
 
-‎ ‎ ‎ ‎ 
+  
+</pre>
 ![exampleimage](https://github.com/sleepyfor/Alive/assets/142181529/7d9e3081-25b6-47de-939a-38322fc0e31c)
 
