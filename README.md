@@ -1,6 +1,7 @@
 <h1 align="center">Alive</h1>
 <img align="left" alt="Cover" src="assets/minecraft/icons/logo3.png" height="420" width="420" /> 
 <pre>
+  
 ## To Know
 
 Alive is a vanilla client for minecraft with a focus on visuals
