@@ -19,6 +19,7 @@ import net.arikia.dev.drpc.DiscordRichPresence;
 import net.arikia.dev.drpc.DiscordUser;
 import net.arikia.dev.drpc.callbacks.ReadyCallback;
 import net.minecraft.client.Minecraft;
+import org.lwjgl.opengl.Display;
 
 import java.awt.*;
 import java.io.File;
@@ -66,6 +67,7 @@ public enum Client {
         config = new Config();
         config.createDirectory();
         config.loadConfig();
+        Display.setTitle("Alive v" + Client.INSTANCE.getClientVersion());
     }
 
     private void startRPC(){

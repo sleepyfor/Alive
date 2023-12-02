@@ -24,7 +24,7 @@ public class CategoryTab extends Tab {
     public void drawTab() {
         if (!Hud.blur.getValueObject())
             Gui.drawRect(parent.getX(), parent.getY(), parent.getX() + width, parent.getY() + height, new Color(10, 10, 10, 200).getRGB());
-        Client.INSTANCE.getArial17().drawStringWithShadow(text, (float) (parent.getX() + 2 + offset), (float) (parent.getY() + 6), color);
+        Client.INSTANCE.getArial17().drawStringWithShadow(text, (float) (parent.getX() + 2 + offset), (float) (parent.getY() + 7), color);
         super.drawTab();
     }
 }
